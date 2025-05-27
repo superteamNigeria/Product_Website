@@ -5,7 +5,7 @@ import ProductCard from './ProductCard'
 const ProductCardDisplay = () => {
   return (
     <section className='flex flex-wrap justify-center items-start mt-4 mb-4 px-4'>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
         {data.map((product) => (
           <div key={product.name} className='p-4'>
             {product.info.map((info) => (

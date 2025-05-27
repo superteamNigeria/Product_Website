@@ -26,7 +26,7 @@ const Hero = () => {
 
   return (
     <section className="w-full flex flex-col items-center text-center px-4 py-6 md:px-6 lg:px-8 max-w-5xl mx-auto">
-      <h2 className="font-semibold text-black text-lg sm:text-xl md:text-2xl mb-4">
+      <h2 className="font-semibold text-black text-lg sm:text-2xl md:text-3xl mb-4 leading-4">
         Looking for a Project to{" "}
         <span
           className={`text-green-base underline transition-all duration-300 ease-out inline-block ${
@@ -41,9 +41,7 @@ const Hero = () => {
       </h2>
 
       <p className="text-neutral-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl mb-6">
-        Each product in our ecosystem is assigned a distinctive tag that
-        succinctly captures its core functionality and category, enabling users
-        to quickly understand its role and value.
+      Each product is assigned a distinctive tag that captures its core functionality and category
       </p>
 
       <div

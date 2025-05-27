@@ -5,7 +5,7 @@ import { avatar1, avatar2, avatar3, avatar4, avatar5 } from "../constants/images
 // Animated Button component
 const Button = ({ title, href }) => {
   return (
-    <button className="bg-[#E6F3ED] text-[#2D986C] font-bold px-6 py-3 rounded-full flex items-center gap-0 hover:gap-3 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center" onClick={() => window.location.href == href}>
+    <button className="bg-[#E6F3ED] text-[#2D986C] font-bold px-6 py-3 rounded-full flex items-center gap-0 hover:gap-3 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap" onClick={() => window.location.href == href}>
       <span className="transition-transform duration-300 group-hover:-translate-x-1">
         {title}
       </span>
@@ -119,7 +119,7 @@ const ProductCard = ({
       </p>
 
       {/* Bottom section */}
-      <div className="flex justify-between items-center pt-2">
+      <div className="flex justify-between items-center pt-2 gap-2">
         <Button title="Read More"  />
 
         {/* Avatar stack */}
@@ -136,7 +136,7 @@ const ProductCard = ({
         )}
 
         <div className="flex -space-x-4">
-           <h2 className="font-extrabold text-[#1E1E1E]">{users}+</h2>
+           <h2 className="font-extrabold text-[#1E1E1E] text-lg">{users}+</h2>
         </div>
       </div>
     </div>

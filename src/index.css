@@ -34,5 +34,7 @@
     --font-bold: Archivo-Bold, 'sans-serif';
     --font-regular: Archivo-Regular, 'sans-serif';
     --font-semiBold: Archivo-SemiBold, 'sans-serif';
+
+    --breakpoint-xl: 1444px;
 }
   
