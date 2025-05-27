@@ -1,0 +1,80 @@
+[
+    {
+        "name": "Ribh Fiance",
+        "image": "https://via.placeholder.com/150",
+        "info": [
+            {
+                "description": "Decentralized ecosystem for global on-chain commerce, marketplace and payments.",
+                "categories": ["PayFi", "Stablecoins", "Live"],
+                "website": "https://example.com",
+                "xLink": "https://x.com",
+                "users": 200
+            }
+        ]
+    },
+    {
+        "name": "Verxio",
+        "image": "https://via.placeholder.com/150",
+        "info": [
+            {
+                "description": "Pay bills and book flight with stablecoins",
+                "categories": ["RWAs", "Live"],
+                "website": "https://example2.com",
+                "xLink": "https://x2.com",
+                "users": 300
+            }
+        ]
+    },
+    {
+        "name": "NectarFi 🐝",
+        "image": "https://via.placeholder.com/150",
+        "info": [
+            {
+                "description": "Your Personal FInance Savings App",
+                "categories": ["DeFi", "Stablecoins", "Live"],
+                "website": "https://example3.com",
+                "xLink": "https://x3.com",
+                "users": 400
+            }
+        ]
+    },
+    {
+        "name": "Paj Cash",
+        "image": "https://via.placeholder.com/150",
+        "info": [
+            {
+                "description": "Bridging the gap between crypto and cash",
+                "categories": ["PayFi", "Live"],
+                "website": "https://example4.com",
+                "xLink": "https://x4.com",
+                "users": 500
+            }
+        ]
+    },
+    {
+        "name": "HeySolana",
+        "image": "https://via.placeholder.com/150",
+        "info": [
+            {
+                "description": "Your Voice powering solana transactions",
+                "categories": ["PayFi", "AI", "Live"],
+                "website": "https://example5.com",
+                "xLink": "https://x5.com",
+                "users": 600
+            }
+        ]
+    },
+    {
+        "name": "thejajaproject",
+        "image": "https://via.placeholder.com/150",
+        "info": [
+            {
+                "description": "The Future Remembers its Kings. Are you ready to rewrite history?",
+                "categories": ["Gaming"],
+                "website": "https://example6.com",
+                "xLink": "https://x6.com",
+                "users": 700
+            }
+        ]
+    }
+]
