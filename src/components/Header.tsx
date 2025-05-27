@@ -97,9 +97,9 @@ const Header = () => {
           {/* Submit Button */}
           <div className="flex-shrink-0">
             <Button
-              title="Submit"
+              title="Submit a Request"
               icon={<ChevronRight />}
-              styles="bg-green-base text-[#E6F3ED] font-regular text-sm"
+              styles="bg-green-base text-[#E6F3ED] justify-middle font-regular text-sm leading-relaxed w-full"
             />
           </div>
         </div>

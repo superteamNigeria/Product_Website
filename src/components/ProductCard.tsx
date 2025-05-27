@@ -5,7 +5,7 @@ import { avatar1, avatar2, avatar3, avatar4, avatar5 } from "../constants/images
 // Animated Button component
 const Button = ({ title, href }) => {
   return (
-    <button className="bg-[#E6F3ED] text-[#2D986C] font-bold px-6 py-3 rounded-full flex items-center gap-0 hover:gap-3 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap" onClick={() => window.location.href == href}>
+    <button className="bg-[#E6F3ED] text-[#2D986C] font-regular px-6 py-3 rounded-full flex items-center gap-0 hover:gap-3 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap" onClick={() => window.location.href == href}>
       <span className="transition-transform duration-300 group-hover:-translate-x-1">
         {title}
       </span>
@@ -21,7 +21,7 @@ const Button = ({ title, href }) => {
 // Badge component for categories
 const Badge = ({ children, variant = "default" }) => {
   const variants = {
-    default: "bg-orange-500 text-white",
+    default: "bg-orange-500 text-white font-regular leading-[14px] text-center",
     secondary: "bg-gray-800 text-white",
     outline: "bg-transparent border border-gray-300 text-gray-700",
   };
@@ -71,7 +71,7 @@ const ProductCard = ({
       {/* Header section */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h2 className="font-bold text-2xl text-[#1E1E1E] mb-3">{name}</h2>
+          <h2 className="font-bold text-2xl text-[#1E1E1E] mb-3 leading-8">{name}</h2>
 
           {/* Category badges */}
           <div className="flex gap-2 mb-4">
@@ -114,7 +114,7 @@ const ProductCard = ({
       </div>
 
       {/* Description */}
-      <p className="text-regular text-[#1E1E1E80] leading-[100%] text-[16px] mb-3 text-pretty">
+      <p className="font-regular text-[#1E1E1E80] leading-relaxed text-[13px] mb-3 text-pretty">
         {description}
       </p>
 

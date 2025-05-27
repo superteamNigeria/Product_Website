@@ -26,7 +26,7 @@ const Hero = () => {
 
   return (
     <section className="w-full flex flex-col items-center text-center px-4 py-6 md:px-6 lg:px-8 max-w-5xl mx-auto">
-      <h2 className="font-semibold text-black text-lg sm:text-2xl md:text-3xl mb-4 leading-4">
+      <h2 className="font-regular leading-4 text-black text-lg sm:text-3xl md:text-3xl mb-4">
         Looking for a Project to{" "}
         <span
           className={`text-green-base underline transition-all duration-300 ease-out inline-block ${
@@ -37,10 +37,10 @@ const Hero = () => {
         >
           {actions[currentActionIndex]}
         </span>
-        ?
+        <span className="italic font-regular">?</span>
       </h2>
 
-      <p className="text-neutral-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl mb-6">
+      <p className="text-black text-center font-regular text-sm sm:text-base md:text-lg leading-relaxed max-w-xl mb-6">
       Each product is assigned a distinctive tag that captures its core functionality and category
       </p>
 
@@ -68,7 +68,7 @@ const Hero = () => {
               }}
             >
               <span
-                className={`font-medium whitespace-nowrap transition-all duration-300 ease-out ${
+                className={`font-regular leading-relaxed whitespace-nowrap transition-all duration-300 ease-out ${
                   isExpanded ? "text-sm" : "text-xs"
                 } ${
                   item.hex === "#374151" || item.hex === "#7C3AED"
