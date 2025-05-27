@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { filterColors } from "../constants/menu";
 import { Search } from "lucide-react";
+import SearchBox from "./ui/SearchBox";
 
 const Hero = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -24,19 +25,22 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="flex-1 gap-4 justify-center items-center text-center">
-      <h2 className="font-semibold text-black text-[40px] text-b md:text-[40px] ">
-        Looking for a Project to  {''}
-        <span 
+    <section className="w-full flex flex-col items-center text-center px-4 py-6 md:px-6 lg:px-8 max-w-5xl mx-auto">
+      <h2 className="font-semibold text-black text-lg sm:text-xl md:text-2xl mb-4">
+        Looking for a Project to{" "}
+        <span
           className={`text-green-base underline transition-all duration-300 ease-out inline-block ${
-            isActionVisible ? 'opacity-100 transform translate-y-0 italic' : 'opacity-0 transform -translate-y-4 italic'
+            isActionVisible
+              ? "opacity-100 translate-y-0 italic"
+              : "opacity-0 -translate-y-4 italic"
           }`}
         >
           {actions[currentActionIndex]}
         </span>
         ?
       </h2>
-      <p className="text-pretty font-regular leading-[100%]">
+
+      <p className="text-neutral-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl mb-6">
         Each product in our ecosystem is assigned a distinctive tag that
         succinctly captures its core functionality and category, enabling users
         to quickly understand its role and value.
@@ -69,8 +73,7 @@ const Hero = () => {
                 className={`font-medium whitespace-nowrap transition-all duration-300 ease-out ${
                   isExpanded ? "text-sm" : "text-xs"
                 } ${
-                  item.hex === "#374151" ||
-                  item.hex === "#7C3AED"
+                  item.hex === "#374151" || item.hex === "#7C3AED"
                     ? "text-white"
                     : item.hex === "#A8E6CF" ||
                       item.hex === "#F59E0B" ||
@@ -96,15 +99,8 @@ const Hero = () => {
         </div>
       </div>
 
-           {/* Search Input */}
-           <div className="flex items-center bg-[#E2E4E9] px-3 py-2.5 rounded-[17px] min-w-[150px]">
-            <Search color="#02834E" width={20} height={20} className="flex-shrink-0" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="bg-transparent border-none outline-none text-neutral-400 font-semibold ml-3 w-full text-sm"
-            />
-          </div>
+      <SearchBox />
+      
     </section>
   );
 };

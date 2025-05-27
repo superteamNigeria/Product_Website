@@ -52,12 +52,12 @@ const Header = () => {
 
           {/* Color Palette Toggle */}
           <div className="relative">
-            <div
+            {/* <div
               className="flex items-center justify-center bg-[#E2E4E9] p-2.5 rounded-[17px] cursor-pointer hover:bg-[#D1D5DB] transition-colors w-10 h-10"
               onClick={handleColorPaletteToggle}
             >
               <SlidersHorizontal className="w-5 h-5 text-gray-600" />
-            </div>
+            </div> */}
 
             {isColorPaletteVisible && (
               <div className="absolute top-12 right-0 bg-neutral-200 rounded-[17px] p-3 z-10 min-w-max shadow-lg">
