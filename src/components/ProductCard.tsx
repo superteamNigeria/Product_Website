@@ -53,7 +53,7 @@ interface ProductCardProps {
   href: string;
   x: string;
   website: string;
-  users: string;
+  users: number;
 }
 
 const ProductCard = ({

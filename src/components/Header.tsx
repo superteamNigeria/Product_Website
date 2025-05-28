@@ -3,6 +3,7 @@ import { ChevronRight, Search, SlidersHorizontal, Menu } from "lucide-react";
 import { logo, whiteLogo } from "../constants/images";
 import { filterColors } from "../constants/menu";
 import Button from "./ui/Button";
+import { ThemeToggle } from "./theme-toggle";
 
 const Header = () => {
   const [isColorPaletteVisible, setIsColorPaletteVisible] = useState(false);
@@ -102,6 +103,7 @@ const Header = () => {
               styles="bg-green-base text-[#E6F3ED] font-regular text-sm"
             />
           </div>
+          <ThemeToggle />
         </div>
       </section>
     </>
