@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { ChevronRight, Search, SlidersHorizontal, Menu, Sun, Moon } from "lucide-react";
+import {
+  ChevronRight,
+  Menu,
+} from "lucide-react";
 import { logo, whiteLogo } from "../constants/images";
 import { filterColors } from "../constants/menu";
 import Button from "./ui/Button";
-import Switch from "./ui/Swtich";
 import { ThemeToggle } from "./theme-toggle";
 
 const Header = () => {
   const [isColorPaletteVisible, setIsColorPaletteVisible] = useState(false);
   const [hoveredColor, setHoveredColor] = useState(null);
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const handleColorPaletteToggle = () => {
     setIsColorPaletteVisible(!isColorPaletteVisible);
@@ -20,7 +22,11 @@ const Header = () => {
       {/* Mobile Header */}
       <section className="w-screen h-[80px] flex items-center justify-between px-4 bg-black md:hidden">
         <a href="/" className="flex-shrink-0">
-          <img src={whiteLogo} alt="logo" className="h-8 w-auto sm:w-[39px] sm:h-[30px] md:hidden" />
+          <img
+            src={whiteLogo}
+            alt="logo"
+            className="h-8 w-auto sm:w-[39px] sm:h-[30px] md:hidden"
+          />
           <img src={logo} alt="logo" className="hidden md:block h-8 w-auto" />
         </a>
         <button className="p-2">
@@ -34,7 +40,11 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <a href="/" className="flex-shrink-0">
             <img src={logo} alt="logo" className="h-8 w-auto dark:hidden" />
-            <img src={whiteLogo} alt="logo" className="h-8 w-auto hidden dark:block" />
+            <img
+              src={whiteLogo}
+              alt="logo"
+              className="h-8 w-auto hidden dark:block"
+            />
           </a>
           <div className="flex items-center bg-neutral-200 dark:bg-[#20232D] px-4 py-2.5 rounded-[17px]">
             <ul className="flex space-x-6">
@@ -53,7 +63,6 @@ const Header = () => {
 
         {/* Right Section */}
         <div className="flex items-center gap-3">
-
           {/* Color Palette Toggle */}
           <div className="relative">
             {/* <div
@@ -99,27 +108,8 @@ const Header = () => {
           </div>
 
           {/* Color Mode Toggle */}
-          <div className="relative flex items-center gap-2">
-            {isDarkMode ? (
-              <Sun className="w-5 h-5 text-[#6CB798]" />
-            ) : (
-              <Moon className="w-5 h-5 text-gray-600" />
-            )}
-            <Switch
-              checked={isDarkMode}
-              onChange={() => setIsDarkMode(!isDarkMode)}
-              className={`${
-                isDarkMode ? 'bg-green-base' : 'bg-gray-200'
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-base focus:ring-offset-2`}
-            >
-              <span
-                className={`${
-                  isDarkMode ? 'translate-x-6' : 'translate-x-1'
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
-            </Switch>
-          </div>
-          
+          <ThemeToggle />
+
           {/* Submit Button */}
           <div className="flex-shrink-0">
             <Button
@@ -128,7 +118,6 @@ const Header = () => {
               styles="bg-green-base text-[#E6F3ED] justify-middle font-regular text-sm leading-relaxed w-full"
             />
           </div>
-          <ThemeToggle />
         </div>
       </section>
     </>
