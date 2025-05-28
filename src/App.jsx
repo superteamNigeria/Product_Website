@@ -1,17 +1,15 @@
-import Footer from "./components/Footer";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import ProductCardDisplay from "./components/ProductCardDisplay";
+import { Routes, Route } from "react-router-dom";
 
+// Pages
+import HomePage from "./pages/HomePage";
+import SubmitPage from "./pages/SubmitPage";
 
 function App() {
   return (
-    <section className="flex-1 lg:px-[80px] lg:py-[48px] dark:bg-[#0A0D14]">
-      <Header />
-      <Hero />
-      <ProductCardDisplay />
-      <Footer />
-    </section>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/submit" element={<SubmitPage />} />
+    </Routes>
   );
 }
 

@@ -8,6 +8,8 @@ import { logo, whiteLogo } from "../constants/images";
 import { filterColors } from "../constants/menu";
 import Button from "./ui/Button";
 import { ThemeToggle } from "./theme-toggle";
+import { Link } from "react-router-dom";
+
 
 const Header = () => {
   const [isColorPaletteVisible, setIsColorPaletteVisible] = useState(false);
@@ -124,11 +126,14 @@ const Header = () => {
 
             {bottonClicked && (
               <div className="absolute top-full left-0 mt-2 flex flex-col gap-2 w-full">
-                <Button
-                  title="Submit Product"
-                  styles="border border-[#20232D] dark:border-[#E6F3ED] hover:border-green-base text-black dark:text-white justify-middle font-regular text-sm leading-relaxed w-full transition-all duration-300 ease-out"
-                  onClick={() => console.log("Add Product clicked")}
-                />
+                
+                <Link to="/submit" className="w-full block">
+                  <Button
+                    title="Submit Product"
+                    styles="border border-[#20232D] dark:border-[#E6F3ED] hover:border-green-base text-black dark:text-white justify-middle font-regular text-sm leading-relaxed w-full transition-all duration-300 ease-out"
+                  />
+                </Link>
+
                 <Button
                   title="Request Edit"
                   styles="border border-[#20232D] dark:border-[#E6F3ED] hover:border-green-base text-black dark:text-white justify-middle font-regular text-sm leading-relaxed w-full transition-all duration-300 ease-out"
