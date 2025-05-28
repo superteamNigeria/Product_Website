@@ -4,22 +4,12 @@ import ProductCard from "./ProductCard";
 
 const ProductCardDisplay = () => {
   return (
-    <section className="flex flex-wrap justify-center items-start mt-4 mb-4 px-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full max-w-screen-xl">
+    <section className='flex flex-wrap justify-center items-start mt-4 mb-4 px-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
         {data.map((product) => (
           <div key={product.name} className="p-0">
             {product.info.map((info) => (
-              <ProductCard
-                key={info.website}
-                name={product.name}
-                categories={info.categories}
-                description={info.description}
-                href={info.website}
-                x={info.xLink}
-                website={info.website}
-                users={info.users}
-                className="mb-4"
-              />
+              <ProductCard name={product.name} categories={info.categories} description={info.description} href={info.website} x={info.xLink} website={info.website} users={info.users} colors={info.brandColor} className='mb-4'/>
             ))}
           </div>
         ))}

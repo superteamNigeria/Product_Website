@@ -3,27 +3,55 @@ import React, { use } from "react";
 import { avatar1, avatar2, avatar3, avatar4, avatar5 } from "../constants/images";
 
 // Animated Button component
-const Button = ({ title, href }) => {
+const Button = ({ title, href, colors = [] }) => {
+  const getHoverStyle = () => {
+    if (colors.length === 2) {
+      return `linear-gradient(to right, ${colors[0]}, ${colors[1]})`;
+    } else if (colors.length === 1) {
+      return `linear-gradient(to right, ${colors[0]}, white)`;
+    }
+    return '';
+  };
+
   return (
-    <button className="bg-[#E6F3ED] text-[#2D986C] font-bold px-6 py-3 rounded-full flex items-center gap-0 hover:gap-3 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center" onClick={() => window.location.href == href}>
+    <button 
+      className="bg-[#E6F3ED] dark:bg-[#20232D] text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap" 
+      onClick={() => window.location.href == href}
+      style={{
+        '--hover-gradient': getHoverStyle(),
+      }}
+    >
       <span className="transition-transform duration-300 group-hover:-translate-x-1">
         {title}
       </span>
-      <span className="opacity-0 transform translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+      <span className="opacity-0 transform translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 mr-2">
         <div className="w-8 h-8 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center">
           <ChevronRight size={20} />
         </div>
       </span>
+      <style jsx>{`
+        button:hover {
+          background: var(--hover-gradient);
+          color: white;
+        }
+      `}</style>
     </button>
   );
 };
 
 // Badge component for categories
-const Badge = ({ children, variant = "default" }) => {
+const Badge = ({ children, variant }) => {
   const variants = {
-    default: "bg-orange-500 text-white",
-    secondary: "bg-gray-800 text-white",
-    outline: "bg-transparent border border-gray-300 text-gray-700",
+    Live: "bg-[#E6F3ED] font-regular dark:bg-[#20232D] dark:text-[#0A0D14] text-black text-center",
+    DeFi: "bg-[#10B981] font-regular text-white text-center",
+    DePIN: "bg-[#06B6D4] font-regular text-white text-center",
+    PayFi: "bg-[#22C55E] font-regular text-white text-center",
+    RWAs: "bg-[#374151] font-regular text-white text-center",
+    InfoFi: "bg-[#0EA5E9] font-regular text-white text-center",
+    Stablecoins: "bg-[#F59E0B] font-regular text-white text-center",
+    Gaming: "bg-[#EA580C] font-regular text-white text-center",
+    AI: "bg-[#DC2626] font-regular text-white text-center",
+    Other: "bg-[#9CA3AF] font-regular text-white text-center",
   };
 
   return (
@@ -53,7 +81,8 @@ interface ProductCardProps {
   href: string;
   x: string;
   website: string;
-  users: number;
+  users: string;
+  colors: []
 }
 
 const ProductCard = ({
@@ -63,7 +92,8 @@ const ProductCard = ({
   href,
   x,
   website,
-  users
+  users,
+  colors
 }: ProductCardProps) => {
     const avatars = [avatar1, avatar2, avatar3]
   return (
@@ -71,19 +101,15 @@ const ProductCard = ({
       {/* Header section */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h2 className="font-bold text-2xl text-[#1E1E1E] mb-3">{name}</h2>
+          <h2 className="font-bold text-2xl text-[#1E1E1E] dark:text-white mb-3 leading-8">{name}</h2>
 
           {/* Category badges */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 text-center">
             {categories?.map((category, index) => (
               <Badge
                 key={index}
                 variant={
-                  index === 0
-                    ? "default"
-                    : index === 1
-                    ? "secondary"
-                    : "outline"
+                  category
                 }
               >
                 {category}
@@ -93,7 +119,7 @@ const ProductCard = ({
         </div>
 
         {/* Social links */}
-        <div className="flex gap-1 -space-x-2 ml-2">
+        <div className="flex gap-1 -space-x-4 ml-2">
           <a
             href={x}
             className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors"
@@ -114,13 +140,13 @@ const ProductCard = ({
       </div>
 
       {/* Description */}
-      <p className="text-regular text-[#1E1E1E80] leading-[100%] text-[16px] mb-3 text-pretty">
+      <p className="font-regular text-[#1E1E1E80] dark:text-[#FFFFFF80] leading-relaxed text-[13px] mb-3 text-pretty">
         {description}
       </p>
 
       {/* Bottom section */}
-      <div className="flex justify-between items-center pt-2">
-        <Button title="Read More"  />
+      <div className="flex justify-between items-center pt-2 gap-2">
+        <Button title="Read More" colors={colors}  />
 
         {/* Avatar stack */}
         {avatars && avatars.length > 0 && (
@@ -136,7 +162,7 @@ const ProductCard = ({
         )}
 
         <div className="flex -space-x-4">
-           <h2 className="font-extrabold text-[#1E1E1E]">{users}+</h2>
+           <h2 className="font-extrabold text-[#1E1E1E] dark:text-white text-lg">{users}+</h2>
         </div>
       </div>
     </div>

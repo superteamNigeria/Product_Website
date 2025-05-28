@@ -8,11 +8,11 @@ import Button from "./components/ui/Button";
 
 function App() {
   return (
-    <section className="flex-1 lg:px-[80px] lg:py-[48px] dark:bg-[#0A0D14] bg-white dark:text-white">
-      <Header />
-      <Hero />
-      <ProductCardDisplay />
-      <Footer />
+    <section className="flex-1 lg:px-[80px] lg:py-[48px] dark:bg-[#0A0D14]">
+    <Header/>
+    <Hero/>
+    <ProductCardDisplay/>
+    <Footer />
     </section>
   );
 }
