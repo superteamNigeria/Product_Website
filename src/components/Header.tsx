@@ -108,15 +108,32 @@ const Header = () => {
           </div>
 
           {/* Color Mode Toggle */}
+
           <ThemeToggle />
 
           {/* Submit Button */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 relative">
             <Button
               title="Submit a Request"
-              icon={<ChevronRight />}
+              icon={bottonClicked ? <X color="#FBFF00" /> : <ChevronRight />}
               styles="bg-green-base text-[#E6F3ED] justify-middle font-regular text-sm leading-relaxed w-full"
+              onClick={() => setBottonClicked(!bottonClicked)}
             />
+
+            {bottonClicked && (
+              <div className="absolute top-full left-0 mt-2 flex flex-col gap-2 w-full">
+                <Button
+                  title="Submit Product"
+                  styles="border border-[#20232D] dark:border-[#E6F3ED] hover:border-green-base text-black dark:text-white justify-middle font-regular text-sm leading-relaxed w-full transition-all duration-300 ease-out"
+                  onClick={() => console.log("Add Product clicked")}
+                />
+                <Button
+                  title="Request Edit"
+                  styles="border border-[#20232D] dark:border-[#E6F3ED] hover:border-green-base text-black dark:text-white justify-middle font-regular text-sm leading-relaxed w-full transition-all duration-300 ease-out"
+                  onClick={() => console.log("Contact Us clicked")}
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>

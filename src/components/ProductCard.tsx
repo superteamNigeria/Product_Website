@@ -8,17 +8,25 @@ const Button = ({ title, href, colors = [] }) => {
     if (colors.length === 2) {
       return `linear-gradient(to right, ${colors[0]}, ${colors[1]})`;
     } else if (colors.length === 1) {
-      return `linear-gradient(to right, ${colors[0]}, white)`;
+      // return `bg-[${colors[0]})]`;
+      return colors[0];
     }
     return '';
   };
 
+  const getSingleBackground = () => {
+    if(colors.length === 1){
+      return `bg-${colors[0]}`
+    }
+  }
+
   return (
     <button 
-      className="bg-[#E6F3ED] dark:bg-[#20232D] text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap" 
+      className="bg-[#E6F3ED] dark:bg-[#20232D]  text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap "
       onClick={() => window.location.href == href}
       style={{
         '--hover-gradient': getHoverStyle(),
+        '--hover-background' : getSingleBackground(),
       }}
     >
       <span className="transition-transform duration-300 group-hover:-translate-x-1">
@@ -42,7 +50,7 @@ const Button = ({ title, href, colors = [] }) => {
 // Badge component for categories
 const Badge = ({ children, variant }) => {
   const variants = {
-    Live: "bg-[#E6F3ED] font-regular dark:bg-[#20232D] dark:text-[#0A0D14] text-black text-center",
+    Live: "bg-[#E6F3ED] font-regular dark:bg-[#20232D] dark:text-white/70 text-black text-center",
     DeFi: "bg-[#10B981] font-regular text-white text-center",
     DePIN: "bg-[#06B6D4] font-regular text-white text-center",
     PayFi: "bg-[#22C55E] font-regular text-white text-center",
@@ -122,7 +130,7 @@ const ProductCard = ({
         <div className="flex gap-1 -space-x-4 ml-2">
           <a
             href={x}
-            className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors"
+            className="p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-green-base transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -130,7 +138,7 @@ const ProductCard = ({
           </a>
           <a
             href={website}
-            className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors"
+            className="p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-green-base transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >

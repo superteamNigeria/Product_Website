@@ -77,7 +77,8 @@ const Hero = () => {
                       item.hex === "#F59E0B" ||
                       item.hex === "#0EA5E9" ||
                       item.hex === "#06B6D4" ||
-                      item.hex === "#A8E6CF"
+                      item.hex === "#A8E6CF" ||
+                      item.hex === "#E6F3ED"
                     ? "text-black"
                     : "text-white"
                 }`}
