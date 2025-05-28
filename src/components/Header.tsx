@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { ChevronRight, Menu, Sun, Moon, X } from "lucide-react";
+import {
+  ChevronRight,
+  Menu,
+} from "lucide-react";
 import { logo, whiteLogo } from "../constants/images";
 import { filterColors } from "../constants/menu";
 import Button from "./ui/Button";
-import Switch from "./ui/Swtich";
-import { useTheme } from "../lib/ThemeProvider";
+import { ThemeToggle } from "./theme-toggle";
 
 const Header = () => {
   const [isColorPaletteVisible, setIsColorPaletteVisible] = useState(false);
   const [hoveredColor, setHoveredColor] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [bottonClicked, setBottonClicked] = useState(false);
-  const { theme, setTheme } = useTheme();
 
   const handleColorPaletteToggle = () => {
     setIsColorPaletteVisible(!isColorPaletteVisible);
@@ -108,26 +108,8 @@ const Header = () => {
           </div>
 
           {/* Color Mode Toggle */}
-          <div className="relative flex items-center gap-2">
-            {isDarkMode ? (
-              <Sun className="w-5 h-5 text-[#6CB798]" />
-            ) : (
-              <Moon className="w-5 h-5 text-gray-600" />
-            )}
-            <Switch
-              checked={theme == 'dark' ? true : false}
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className={`${
-                isDarkMode ? "bg-green-base" : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-base focus:ring-offset-2`}
-            >
-              <span
-                className={`${
-                  isDarkMode ? "translate-x-6" : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
-            </Switch>
-          </div>
+
+          <ThemeToggle />
 
           {/* Submit Button */}
           <div className="flex-shrink-0 relative">
