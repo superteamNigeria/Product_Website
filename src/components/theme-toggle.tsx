@@ -21,7 +21,7 @@ export const ThemeToggle = () => {
         checked={isDark}
         onChange={handleChange}
         className={`${
-          isDarkMode ? "bg-green-base" : "bg-gray-200"
+          isDark ? "bg-green-base" : "bg-gray-200"
         } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-base focus:ring-offset-2`}
       >
         <span
