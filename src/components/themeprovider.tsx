@@ -25,31 +25,38 @@ export function ThemeProvider({
   defaultTheme = "system",
   storageKey = "vite-ui-theme",
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme);
-
-  // Load saved theme from localStorage
-  useEffect(() => {
-    const storedTheme = localStorage.getItem(storageKey) as Theme | null;
-    if (storedTheme) {
-      setTheme(storedTheme);
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      const storedTheme = localStorage.getItem(storageKey) as Theme | null;
+      return storedTheme || defaultTheme;
     }
-  }, [storageKey]);
+    return defaultTheme;
+  });
 
-  // Apply theme class to <html>
+  // Apply theme to <html> and sync with localStorage
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove("light", "dark");
+    const systemPrefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
 
     const appliedTheme =
-      theme === "system"
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light"
-        : theme;
+      theme === "system" ? (systemPrefersDark ? "dark" : "light") : theme;
 
+    root.classList.remove("light", "dark");
     root.classList.add(appliedTheme);
     localStorage.setItem(storageKey, theme);
   }, [theme, storageKey]);
+    
+  useEffect(() => {
+    const storedTheme = localStorage.getItem(storageKey) as Theme | null;
+    if (!storedTheme && defaultTheme === "system") {
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      setTheme(prefersDark ? "dark" : "light");
+    }
+  }, [defaultTheme, storageKey]);
 
   const value = {
     theme,
