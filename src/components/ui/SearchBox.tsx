@@ -1,6 +1,6 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { filterColors } from "../../constants/menu";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const SearchBox = () => {
   const [isColorPaletteVisible, setIsColorPaletteVisible] = useState(false);
@@ -29,7 +29,7 @@ const SearchBox = () => {
           <input
             type="text"
             placeholder="Search"
-            className="bg-transparent border-none outline-none text-neutral-600 dark:bg-[#20232D] font-medium ml-3 w-full text-sm"
+            className="bg-transparent border-none outline-none text-neutral-600 dark:bg-[#20232D] dark:text-white font-medium ml-3 w-full text-sm"
           />
         </div>
 
@@ -65,13 +65,13 @@ const SearchBox = () => {
             >
               {hoveredColor === index ? (
                 <>
-                  <span className="text-neutral-800 text-xs font-medium whitespace-nowrap">
+                  <span className={`text-black text-xs font-medium whitespace-nowrap `}>
                     {color.name}
                   </span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-white/70"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-black/70 dark:bg-white/70"></div>
                 </>
               ) : (
-                <div className="w-1.5 h-1.5 rounded-full bg-white/70"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-black/70 dark:bg-white/70"></div>
               )}
             </div>
           ))}
