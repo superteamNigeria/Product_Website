@@ -12,6 +12,7 @@ const Header = () => {
   const [isColorPaletteVisible, setIsColorPaletteVisible] = useState(false);
   const [hoveredColor, setHoveredColor] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [buttonClicked, setBottonClicked] = useState(false);
 
   const handleColorPaletteToggle = () => {
     setIsColorPaletteVisible(!isColorPaletteVisible);
