@@ -8,7 +8,8 @@
                 "categories": ["PayFi", "Stablecoins", "Live"],
                 "website": "https://example.com",
                 "xLink": "https://x.com",
-                "users": 200
+                "users": 200,
+                "brandColor": ["#DC97EF", "#223FD3"]
             }
         ]
     },

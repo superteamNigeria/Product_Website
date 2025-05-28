@@ -6,5 +6,6 @@ import avatar4 from '../assets/images/avatar4.png'
 import avatar5 from '../assets/images/avatar5.png'
 import footerLogo from '../assets/images/footerlogo.png'
 import whiteLogo from '../assets/images/whiteLogo.png'
+import footerWhiteLogo from '../assets/images/footerWhiteLogo.png'
 
-export { logo, avatar1, avatar2, avatar3, avatar4, avatar5, footerLogo, whiteLogo }
+export { logo, avatar1, avatar2, avatar3, avatar4, avatar5, footerLogo, whiteLogo, footerWhiteLogo }

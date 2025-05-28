@@ -9,7 +9,7 @@ const ProductCardDisplay = () => {
         {data.map((product) => (
           <div key={product.name} className='p-4'>
             {product.info.map((info) => (
-              <ProductCard name={product.name} categories={info.categories} description={info.description} href={info.website} x={info.xLink} website={info.website} users={info.users} className='mb-4'/>
+              <ProductCard name={product.name} categories={info.categories} description={info.description} href={info.website} x={info.xLink} website={info.website} users={info.users} colors={info.brandColor} className='mb-4'/>
             ))}
           </div>
         ))}
