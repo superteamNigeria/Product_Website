@@ -22,7 +22,8 @@
                 "categories": ["RWAs", "Live"],
                 "website": "https://example2.com",
                 "xLink": "https://x2.com",
-                "users": 300
+                "users": 300,
+                "brandColor": ["#01AFEB"]
             }
         ]
     },
@@ -35,7 +36,8 @@
                 "categories": ["DeFi", "Stablecoins", "Live"],
                 "website": "https://example3.com",
                 "xLink": "https://x3.com",
-                "users": 400
+                "users": 400,
+                "brandColor": ["#2E2214"]
             }
         ]
     },
@@ -48,7 +50,8 @@
                 "categories": ["PayFi", "Live"],
                 "website": "https://example4.com",
                 "xLink": "https://x4.com",
-                "users": 500
+                "users": 500,
+                "brandColor": ["#001AFF"]
             }
         ]
     },
@@ -61,7 +64,8 @@
                 "categories": ["PayFi", "AI", "Live"],
                 "website": "https://example5.com",
                 "xLink": "https://x5.com",
-                "users": 600
+                "users": 600,
+                "brandColor": ["#C336F4", "#19E6AD"]
             }
         ]
     },
@@ -74,7 +78,8 @@
                 "categories": ["Gaming"],
                 "website": "https://example6.com",
                 "xLink": "https://x6.com",
-                "users": 700
+                "users": 700,
+                "brandColor": ["#193759"]
             }
         ]
     }

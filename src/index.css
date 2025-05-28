@@ -13,6 +13,9 @@
 
 @import "tailwindcss";
 
+/* Define a custom variant for dark mode */
+@custom-variant dark (&:is(.dark *));
+
 @theme {
     --color-green-darker: #015030;
     --color-green-dark: #1015C37;
@@ -37,4 +40,6 @@
 
     --breakpoint-xl: 1444px;
 }
+
+
   
