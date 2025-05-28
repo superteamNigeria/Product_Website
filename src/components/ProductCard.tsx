@@ -153,7 +153,7 @@ const ProductCard = ({
       </p>
 
       {/* Bottom section */}
-      <div className="flex justify-between items-center pt-2 gap-2">
+      <div className="p-1 flex justify-between items-center pt-2 gap-2">
         <Button title="Read More" colors={colors}  />
 
         {/* Avatar stack */}

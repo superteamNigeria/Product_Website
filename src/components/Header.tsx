@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   ChevronRight,
   Menu,
+  X,
 } from "lucide-react";
 import { logo, whiteLogo } from "../constants/images";
 import { filterColors } from "../constants/menu";
@@ -12,7 +13,7 @@ const Header = () => {
   const [isColorPaletteVisible, setIsColorPaletteVisible] = useState(false);
   const [hoveredColor, setHoveredColor] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [buttonClicked, setBottonClicked] = useState(false);
+  const [bottonClicked, setBottonClicked] = useState(false);
 
   const handleColorPaletteToggle = () => {
     setIsColorPaletteVisible(!isColorPaletteVisible);
