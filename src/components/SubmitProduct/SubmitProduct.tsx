@@ -51,11 +51,12 @@ const SubmitProduct = () => {
             </button>
           ) : (
             <button
-              type="submit"
-              className="bg-[#02834E] text-white px-6 py-2 rounded-full text-sm hover:bg-green-700"
+            type="submit"
+            className="bg-[#02834E] text-white px-6 py-2 rounded-full text-sm transition-colors duration-300 hover:bg-[#6CB798] hover:text-black"
             >
-              Submit →
+            Submit →
             </button>
+
           )}
         </div>
       </div>
