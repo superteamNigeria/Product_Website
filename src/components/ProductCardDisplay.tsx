@@ -26,24 +26,22 @@ interface ProductCardProps {
 }
 
 const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PRODUCTS_PER_PAGE = 10;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let url = 'https://superteamng-products-backend.vercel.app/api/products';
-        const params = [];
-        if (searchQuery) params.push(`q=${encodeURIComponent(searchQuery)}`);
-        if (selectedCategory) params.push(`category=${encodeURIComponent(selectedCategory)}`);
-        if (params.length) url += '/search?' + params.join('&');
+        const url = 'https://superteamng-products-backend.vercel.app/api/products';
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
         const data = await response.json();
-        setProducts(data);
+        setAllProducts(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -51,7 +49,29 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
       }
     };
     fetchProducts();
+  }, []);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
   }, [searchQuery, selectedCategory]);
+
+  // Client-side filtering
+  const filteredProducts = allProducts.filter(product => {
+    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+    const matchesSearch = searchQuery ? (
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : true;
+    return matchesCategory && matchesSearch;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * PRODUCTS_PER_PAGE,
+    currentPage * PRODUCTS_PER_PAGE
+  );
 
   if (loading) {
     return (
@@ -85,12 +105,10 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
     );
   }
 
-  
-
   return (
     <section className='flex flex-wrap justify-center items-start mt-4 mb-4 px-4'>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
-        {products.map((product) => (
+        {paginatedProducts.map((product) => (
           <ProductCard 
             key={product.id}
             name={product.name}
@@ -104,6 +122,34 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
           />
         ))}
       </div>
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center mt-8 gap-2 w-full">
+          <button
+            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium disabled:opacity-50"
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              className={`px-3 py-1 rounded-full font-medium mx-1 ${currentPage === i + 1 ? 'bg-green-base text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}
+              onClick={() => setCurrentPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium disabled:opacity-50"
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </section>
   );
 };

@@ -18,7 +18,7 @@ const Step4_Links = () => {
       
       {/* Twitter/X Profile */}
       <div>
-        <label className="block mb-1 font-medium">X (Twitter) Profile:</label>
+        <label className="block mb-1 font-medium dark:text-white">X (Twitter) Profile:</label>
         <input
           name="twitter"
           type="text"
@@ -31,7 +31,7 @@ const Step4_Links = () => {
 
       {/* Website URL */}
       <div>
-        <label className="block mb-1 font-medium">Product Website / Page:</label>
+        <label className="block mb-1 font-medium dark:text-white">Product Website / Page:</label>
         <input
           name="website"
           type="text"
