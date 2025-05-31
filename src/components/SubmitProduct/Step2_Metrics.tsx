@@ -18,7 +18,7 @@ const Step2_Metrics = () => {
       
       {/* Monthly Active Users */}
       <div>
-        <label className="block mb-1 font-medium">Number of monthly active users:</label>
+        <label className="block mb-1 font-medium dark:text-white">Number of monthly active users:</label>
         <select
           name="monthlyUsers"
           value={form.monthlyUsers}
@@ -36,7 +36,7 @@ const Step2_Metrics = () => {
 
       {/* Transaction Volume */}
       <div>
-        <label className="block mb-1 font-medium">Transaction Volume:</label>
+        <label className="block mb-1 font-medium dark:text-white">Transaction Volume:</label>
         <input
           name="volume"
           type="text"
