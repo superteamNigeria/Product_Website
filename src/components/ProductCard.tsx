@@ -3,12 +3,17 @@ import React, { use } from "react";
 import { avatar1, avatar2, avatar3, avatar4, avatar5 } from "../constants/images";
 
 // Animated Button component
-const Button = ({ title, href, colors = [] }) => {
+interface ButtonProps {
+  title: string;
+  href: string;
+  colors?: string[];
+}
+
+const Button: React.FC<ButtonProps> = ({ title, href, colors = [] }) => {
   const getHoverStyle = () => {
     if (colors.length === 2) {
       return `linear-gradient(to right, ${colors[0]}, ${colors[1]})`;
     } else if (colors.length === 1) {
-      // return `bg-[${colors[0]})]`;
       return colors[0];
     }
     return '';
@@ -23,10 +28,10 @@ const Button = ({ title, href, colors = [] }) => {
   return (
     <button 
       className="bg-[#E6F3ED] dark:bg-[#20232D]  text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap "
-      onClick={() => window.location.href == href}
+      onClick={() => window.location.href = href}
       style={{
-        '--hover-gradient': getHoverStyle(),
-        '--hover-background' : getSingleBackground(),
+        background: colors.length === 2 ? getHoverStyle() : undefined,
+        backgroundColor: colors.length === 1 ? colors[0] : undefined,
       }}
     >
       <span className="transition-transform duration-300 group-hover:-translate-x-1">
@@ -37,12 +42,6 @@ const Button = ({ title, href, colors = [] }) => {
           <ChevronRight size={20} />
         </div>
       </span>
-      <style jsx>{`
-        button:hover {
-          background: var(--hover-gradient);
-          color: white;
-        }
-      `}</style>
     </button>
   );
 };
@@ -90,7 +89,7 @@ interface ProductCardProps {
   x: string;
   website: string;
   users: string;
-  colors: []
+  colors: string[];
 }
 
 const ProductCard = ({
@@ -154,7 +153,7 @@ const ProductCard = ({
 
       {/* Bottom section */}
       <div className="p-1 flex justify-between items-center pt-2 gap-2">
-        <Button title="Read More" colors={colors}  />
+        <Button title="Read More" href={href} colors={colors}  />
 
         {/* Avatar stack */}
         {avatars && avatars.length > 0 && (

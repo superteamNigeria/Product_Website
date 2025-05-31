@@ -4,7 +4,7 @@ import { filterColors } from "../constants/menu";
 import { Search } from "lucide-react";
 import SearchBox from "./ui/SearchBox";
 
-const Hero = () => {
+const Hero = ({ searchQuery, setSearchQuery, selectedCategory, setSelectedCategory }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentActionIndex, setCurrentActionIndex] = useState(0);
   const [isActionVisible, setIsActionVisible] = useState(true);
@@ -98,7 +98,12 @@ const Hero = () => {
         </div>
       </div>
 
-      <SearchBox />
+      <SearchBox
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+      />
       
     </section>
   );
