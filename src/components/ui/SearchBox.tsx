@@ -1,14 +1,19 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { filterColors } from "../../constants/menu";
-import React, { useState } from "react";
+import React from "react";
 
-const SearchBox = () => {
-  const [isColorPaletteVisible, setIsColorPaletteVisible] = useState(false);
-  const [hoveredColor, setHoveredColor] = useState<number | null>(null);
+const SearchBox = ({
+  searchQuery,
+  setSearchQuery,
+  selectedCategory,
+  setSelectedCategory,
+}) => {
+  const [isColorPaletteVisible, setIsColorPaletteVisible] = React.useState(false);
+  const [hoveredColor, setHoveredColor] = React.useState<number | null>(null);
 
   const handleColorPaletteToggle = () => {
     setIsColorPaletteVisible(!isColorPaletteVisible);
-    };
+  };
     
   return (
     <div className="flex flex-col justify-center items-center w-full max-w-3xl p-3 gap-2 ">
@@ -28,6 +33,8 @@ const SearchBox = () => {
           />
           <input
             type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search"
             className="bg-transparent border-none outline-none text-neutral-600 dark:bg-[#20232D] dark:text-white font-medium ml-3 w-full text-sm"
           />
@@ -46,7 +53,24 @@ const SearchBox = () => {
         </div>
       </div>
 
-      {isColorPaletteVisible && (
+      {/* Show selected filter pill if a filter is selected */}
+      {selectedCategory && (
+        <div className="flex items-center gap-2 mt-2">
+          <span className="px-3 py-1 rounded-full bg-[#02834E] text-white text-xs font-medium flex items-center">
+            {selectedCategory}
+            <button
+              className="ml-2 text-white bg-transparent hover:text-gray-200 focus:outline-none"
+              onClick={() => setSelectedCategory("")}
+              aria-label="Clear filter"
+            >
+              &times;
+            </button>
+          </span>
+        </div>
+      )}
+
+      {/* Only show color palette if no filter is selected */}
+      {isColorPaletteVisible && !selectedCategory && (
         <div className="flex gap-2">
           {filterColors.map((color, index) => (
             <div
@@ -60,7 +84,8 @@ const SearchBox = () => {
               onMouseEnter={() => setHoveredColor(index)}
               onMouseLeave={() => setHoveredColor(null)}
               onClick={() => {
-                console.log(`Selected: ${color.name}`);
+                setSelectedCategory(color.name);
+                setIsColorPaletteVisible(false);
               }}
             >
               {hoveredColor === index ? (
