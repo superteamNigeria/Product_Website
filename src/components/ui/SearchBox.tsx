@@ -34,7 +34,7 @@ const SearchBox = () => {
         </div>
 
         <div
-          className="text-gray-600 bg-[#E2E4E9] p-3 rounded-full cursor-pointer hover:bg-[#D1D5DB] transition-colors md:hidden"
+          className="text-gray-600 bg-[#E2E4E9] p-3 rounded-full cursor-pointer hover:bg-[#D1D5DB] transition-colors"
           onClick={handleColorPaletteToggle}
         >
           <SlidersHorizontal
