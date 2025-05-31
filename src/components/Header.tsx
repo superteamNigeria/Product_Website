@@ -52,15 +52,15 @@ const Header = () => {
           </a>
           <div className="flex items-center bg-neutral-200 dark:bg-[#20232D] px-4 py-2.5 rounded-[17px]">
             <ul className="flex space-x-6">
-              <li className="text-black dark:text-white hover:text-green-darker font-semibold cursor-pointer text-sm whitespace-nowrap">
+              <a href="/" className="text-black dark:text-white hover:text-green-darker font-semibold cursor-pointer text-sm whitespace-nowrap">
                 Home
-              </li>
-              <li className="text-black dark:text-white font-semibold hover:text-green-darker cursor-pointer text-sm whitespace-nowrap">
+              </a>
+              <a className="text-black dark:text-white font-semibold hover:text-green-darker cursor-pointer text-sm whitespace-nowrap">
                 About
-              </li>
-              <li className="text-black dark:text-white font-semibold hover:text-green-darker cursor-pointer text-sm whitespace-nowrap">
+              </a>
+              <a className="text-black dark:text-white font-semibold hover:text-green-darker cursor-pointer text-sm whitespace-nowrap">
                 Contact Us
-              </li>
+              </a>
             </ul>
           </div>
         </div>
