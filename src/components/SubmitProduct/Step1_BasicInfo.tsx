@@ -28,7 +28,7 @@ const Step1_BasicInfo = () => {
 
       {/* Product Name */}
       <div>
-        <label className="block mb-1 font-medium">Product Name:</label>
+        <label className="block mb-1 font-medium dark:text-white">Product Name:</label>
         <input
           name="name"
           value={form.name}
@@ -41,7 +41,7 @@ const Step1_BasicInfo = () => {
 
       {/* One Liner */}
       <div>
-        <label className="block mb-1 font-medium">One Liner:</label>
+        <label className="block mb-1 font-medium dark:text-white">One Liner:</label>
         <input
           name="oneLiner"
           value={form.oneLiner}
@@ -54,7 +54,7 @@ const Step1_BasicInfo = () => {
 
       {/* Tags */}
       <div>
-        <label className="block mb-1 font-medium">Tags:</label>
+        <label className="block mb-1 font-medium dark:text-white">Tags:</label>
         <select
           name="tags"
           value={form.tags}
@@ -73,7 +73,7 @@ const Step1_BasicInfo = () => {
 
       {/* Logo Upload */}
       <div>
-        <label className="block mb-2 font-medium">Logo:</label>
+        <label className="block mb-2 font-medium dark:text-white">Logo:</label>
         <div className="border border-dashed border-[#D9D9D9] rounded-xl py-10 px-5 text-center bg-[#FAFAFA] dark:bg-[#1E1E1E]">
           <input
             type="file"

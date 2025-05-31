@@ -17,7 +17,7 @@ const SubmitProduct = () => {
     <div className="flex-1 lg:px-[80px] lg:py-[48px] dark:bg-[#0A0D14]">
       <Header />
       <div className="mx-auto px-6 py-8">
-        <h1 className="text-center text-2xl font-bold">
+        <h1 className="text-center text-2xl font-bold dark:text-white">
           Submit a New <span className="text-[#02834E] italic">Product</span>
         </h1>
         <p className="text-center mt-2 text-sm text-[#868C98] dark:text-gray-400">

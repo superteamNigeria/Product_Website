@@ -36,7 +36,7 @@ const Step3_Team = () => {
         >
           {/* Name Field */}
           <div>
-            <label className="block mb-1 font-medium">Name:</label>
+            <label className="block mb-1 font-medium dark:text-white">Name:</label>
             <input
               type="text"
               placeholder="e.g. Chidera Anichebe"
@@ -50,7 +50,7 @@ const Step3_Team = () => {
 
           {/* Role Field */}
           <div>
-            <label className="block mb-1 font-medium">Role:</label>
+            <label className="block mb-1 font-medium dark:text-white">Role:</label>
             <input
               type="text"
               placeholder="e.g. Founder"

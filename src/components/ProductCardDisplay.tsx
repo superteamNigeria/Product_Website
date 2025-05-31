@@ -26,24 +26,20 @@ interface ProductCardProps {
 }
 
 const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let url = 'https://superteamng-products-backend.vercel.app/api/products';
-        const params = [];
-        if (searchQuery) params.push(`q=${encodeURIComponent(searchQuery)}`);
-        if (selectedCategory) params.push(`category=${encodeURIComponent(selectedCategory)}`);
-        if (params.length) url += '/search?' + params.join('&');
+        const url = 'https://superteamng-products-backend.vercel.app/api/products';
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch products');
         }
         const data = await response.json();
-        setProducts(data);
+        setAllProducts(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -51,7 +47,17 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
       }
     };
     fetchProducts();
-  }, [searchQuery, selectedCategory]);
+  }, []);
+
+  // Client-side filtering
+  const filteredProducts = allProducts.filter(product => {
+    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+    const matchesSearch = searchQuery ? (
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : true;
+    return matchesCategory && matchesSearch;
+  });
 
   if (loading) {
     return (
@@ -85,12 +91,10 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
     );
   }
 
-  
-
   return (
     <section className='flex flex-wrap justify-center items-start mt-4 mb-4 px-4'>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard 
             key={product.id}
             name={product.name}
