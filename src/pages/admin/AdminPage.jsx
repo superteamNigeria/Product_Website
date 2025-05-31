@@ -1,58 +1,99 @@
+"use client"
 
-
-
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Edit, Trash2, Check, X, BarChart3, Package, Users, TrendingUp, Eye, EyeOff } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
+import { useState, useEffect } from "react"
+import { ChevronLeft, ChevronRight, Plus, Edit, Trash2, Check, X, BarChart3, Package } from "lucide-react"
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from "recharts"
 
 // API Base URL
-const API_BASE_URL = 'https://superteamng-products-backend.vercel.app/api';
+const API_BASE_URL = "https://superteamng-products-backend.vercel.app/api"
 
-// Custom hooks for API calls
+// Custom hooks for API calls - FIXED VERSION
 const useProducts = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const fetchProducts = async () => {
     try {
-      setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/products`);
-      const data = await response.json();
-      setProducts(data.products || []);
+      setLoading(true)
+      setError(null)
+
+      console.log("Fetching products from:", `${API_BASE_URL}/products`)
+
+      const response = await fetch(`${API_BASE_URL}/products`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      })
+
+      console.log("Response status:", response.status)
+      console.log("Response ok:", response.ok)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log("Raw API response:", data)
+
+      // Handle different response structures
+      let productsArray = []
+      if (Array.isArray(data)) {
+        // If response is directly an array
+        productsArray = data
+      } else if (data.products && Array.isArray(data.products)) {
+        // If response has products property
+        productsArray = data.products
+      } else if (data.data && Array.isArray(data.data)) {
+        // If response has data property
+        productsArray = data.data
+      } else {
+        console.warn("Unexpected response structure:", data)
+        productsArray = []
+      }
+
+      console.log("Processed products array:", productsArray)
+      console.log("Number of products:", productsArray.length)
+
+      setProducts(productsArray)
     } catch (err) {
-      setError(err.message);
+      console.error("Error fetching products:", err)
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchProducts()
+  }, [])
 
-  return { products, loading, error, refetch: fetchProducts };
-};
+  return { products, loading, error, refetch: fetchProducts }
+}
 
 // Toast notification component
 const Toast = ({ message, type, show, onClose }) => {
   useEffect(() => {
     if (show) {
-      const timer = setTimeout(onClose, 3000);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(onClose, 3000)
+      return () => clearTimeout(timer)
     }
-  }, [show, onClose]);
+  }, [show, onClose])
 
-  if (!show) return null;
+  if (!show) return null
 
   return (
-    <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-      type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-    } text-white`}>
+    <div
+      className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+        type === "success" ? "bg-green-500" : type === "error" ? "bg-red-500" : "bg-blue-500"
+      } text-white`}
+    >
       {message}
     </div>
-  );
-};
+  )
+}
 
 // Loading skeleton component
 const Skeleton = ({ className = "", count = 1 }) => {
@@ -62,38 +103,42 @@ const Skeleton = ({ className = "", count = 1 }) => {
         <div key={i} className={`animate-pulse bg-gray-200 rounded ${className}`}></div>
       ))}
     </>
-  );
-};
+  )
+}
 
-// Analytics Dashboard Component
+// Analytics Dashboard Component - FIXED VERSION
 const AnalyticsDashboard = ({ products }) => {
-  const approvedCount = products.filter(p => p.isApproved).length;
-  const unapprovedCount = products.length - approvedCount;
-  
+  console.log("Analytics Dashboard - products received:", products)
+
+  const approvedCount = products.filter((p) => p.isApproved === true).length
+  const unapprovedCount = products.length - approvedCount
+
   const categoryData = products.reduce((acc, product) => {
-    acc[product.category] = (acc[product.category] || 0) + 1;
-    return acc;
-  }, {});
+    const category = product.category || "Unknown"
+    acc[category] = (acc[category] || 0) + 1
+    return acc
+  }, {})
 
   const pieData = [
-    { name: 'Approved', value: approvedCount, color: '#10B981' },
-    { name: 'Unapproved', value: unapprovedCount, color: '#EF4444' }
-  ];
+    { name: "Approved", value: approvedCount, color: "#10B981" },
+    { name: "Unapproved", value: unapprovedCount, color: "#EF4444" },
+  ]
 
   const categoryChartData = Object.entries(categoryData).map(([category, count]) => ({
     category,
-    count
-  }));
+    count,
+  }))
 
   const statusData = products.reduce((acc, product) => {
-    acc[product.status] = (acc[product.status] || 0) + 1;
-    return acc;
-  }, {});
+    const status = product.status || "Unknown"
+    acc[status] = (acc[status] || 0) + 1
+    return acc
+  }, {})
 
   const statusChartData = Object.entries(statusData).map(([status, count]) => ({
     status,
-    count
-  }));
+    count,
+  }))
 
   return (
     <div className="space-y-6">
@@ -107,7 +152,7 @@ const AnalyticsDashboard = ({ products }) => {
             <Package className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-xl shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
@@ -175,92 +220,119 @@ const AnalyticsDashboard = ({ products }) => {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border">
-        <h3 className="text-lg font-semibold mb-4">Products by Status</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={statusChartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="status" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#10B981" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {statusChartData.length > 0 && (
+        <div className="bg-white p-6 rounded-xl shadow-sm border">
+          <h3 className="text-lg font-semibold mb-4">Products by Status</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={statusChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="status" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#10B981" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
-  );
-};
+  )
+}
 
-// Products Management Component
+// Products Management Component - FIXED VERSION
 const ProductsManagement = ({ products, onRefetch }) => {
-  const [activeTab, setActiveTab] = useState('approved');
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const [activeTab, setActiveTab] = useState("approved")
+  const [editingProduct, setEditingProduct] = useState(null)
+  const [toast, setToast] = useState({ show: false, message: "", type: "" })
 
   const showToast = (message, type) => {
-    setToast({ show: true, message, type });
-  };
+    setToast({ show: true, message, type })
+  }
 
-  const approvedProducts = products.filter(p => p.isApproved);
-  const unapprovedProducts = products.filter(p => !p.isApproved);
+  const approvedProducts = products.filter((p) => p.isApproved === true)
+  const unapprovedProducts = products.filter((p) => p.isApproved !== true)
 
   const approveProduct = async (productId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isApproved: true })
-      });
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ isApproved: true }),
+      })
       if (response.ok) {
-        showToast('Product approved successfully!', 'success');
-        onRefetch();
+        showToast("Product approved successfully!", "success")
+        onRefetch()
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
     } catch (error) {
-      showToast('Failed to approve product', 'error');
+      console.error("Error approving product:", error)
+      showToast("Failed to approve product", "error")
     }
-  };
+  }
 
   const deleteProduct = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
-          method: 'DELETE'
-        });
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+          },
+        })
         if (response.ok) {
-          showToast('Product deleted successfully!', 'success');
-          onRefetch();
+          showToast("Product deleted successfully!", "success")
+          onRefetch()
+        } else {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
       } catch (error) {
-        showToast('Failed to delete product', 'error');
+        console.error("Error deleting product:", error)
+        showToast("Failed to delete product", "error")
       }
     }
-  };
+  }
 
   const ProductCard = ({ product, showApprove = false }) => (
     <div className="bg-white rounded-xl border shadow-sm p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start space-x-4">
           {product.icon && (
-            <img src={product.icon} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />
+            <img
+              src={product.icon || "/placeholder.svg"}
+              alt={product.name || "Product"}
+              className="w-12 h-12 rounded-lg object-cover"
+            />
           )}
           <div>
-            <h3 className="font-semibold text-lg text-gray-900">{product.name}</h3>
-            <p className="text-sm text-gray-600">{product.alias}</p>
+            <h3 className="font-semibold text-lg text-gray-900">{product.name || "Unnamed Product"}</h3>
+            <p className="text-sm text-gray-600">{product.alias || ""}</p>
             <div className="flex items-center space-x-2 mt-2">
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                product.category === 'DeFi' ? 'bg-green-100 text-green-800' :
-                product.category === 'Gaming' ? 'bg-red-100 text-red-800' :
-                product.category === 'Tools' ? 'bg-blue-100 text-blue-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
-                {product.category}
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  product.category === "DeFi"
+                    ? "bg-green-100 text-green-800"
+                    : product.category === "Gaming"
+                      ? "bg-red-100 text-red-800"
+                      : product.category === "Tools"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {product.category || "Unknown"}
               </span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                product.status === 'Live' ? 'bg-green-100 text-green-800' :
-                product.status === 'Beta' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
-                {product.status}
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  product.status === "Live"
+                    ? "bg-green-100 text-green-800"
+                    : product.status === "Beta"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {product.status || "Unknown"}
               </span>
             </div>
           </div>
@@ -291,164 +363,173 @@ const ProductsManagement = ({ products, onRefetch }) => {
           </button>
         </div>
       </div>
-      <p className="text-gray-600 text-sm">{product.description}</p>
-      {product.founder && (
-        <p className="text-xs text-gray-500 mt-2">Founded by: {product.founder}</p>
-      )}
+      <p className="text-gray-600 text-sm">{product.description || "No description available"}</p>
+      {product.founder && <p className="text-xs text-gray-500 mt-2">Founded by: {product.founder}</p>}
     </div>
-  );
+  )
 
   return (
     <div className="space-y-6">
       <div className="flex border-b">
         <button
           className={`px-4 py-2 font-medium ${
-            activeTab === 'approved'
-              ? 'border-b-2 border-green-500 text-green-600'
-              : 'text-gray-500 hover:text-gray-700'
+            activeTab === "approved"
+              ? "border-b-2 border-green-500 text-green-600"
+              : "text-gray-500 hover:text-gray-700"
           }`}
-          onClick={() => setActiveTab('approved')}
+          onClick={() => setActiveTab("approved")}
         >
           Approved ({approvedProducts.length})
         </button>
         <button
           className={`px-4 py-2 font-medium ${
-            activeTab === 'unapproved'
-              ? 'border-b-2 border-red-500 text-red-600'
-              : 'text-gray-500 hover:text-gray-700'
+            activeTab === "unapproved" ? "border-b-2 border-red-500 text-red-600" : "text-gray-500 hover:text-gray-700"
           }`}
-          onClick={() => setActiveTab('unapproved')}
+          onClick={() => setActiveTab("unapproved")}
         >
           Unapproved ({unapprovedProducts.length})
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {activeTab === 'approved'
-          ? approvedProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))
-          : unapprovedProducts.map(product => (
-              <ProductCard key={product.id} product={product} showApprove />
-            ))
-        }
-      </div>
+      {products.length === 0 ? (
+        <div className="text-center py-12">
+          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+          <p className="text-gray-500">There are no products to display at the moment.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {activeTab === "approved"
+            ? approvedProducts.map((product) => <ProductCard key={product.id} product={product} />)
+            : unapprovedProducts.map((product) => <ProductCard key={product.id} product={product} showApprove />)}
+        </div>
+      )}
 
       <Toast
         message={toast.message}
         type={toast.type}
         show={toast.show}
-        onClose={() => setToast({ show: false, message: '', type: '' })}
+        onClose={() => setToast({ show: false, message: "", type: "" })}
       />
     </div>
-  );
-};
+  )
+}
 
-// Multi-step Create Product Form
+// Multi-step Create Product Form - FIXED VERSION
 const CreateProductForm = ({ onRefetch }) => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    alias: '',
-    category: 'DeFi',
+    name: "",
+    description: "",
+    alias: "",
+    category: "DeFi",
     verified: false,
     openSource: false,
     isApproved: true,
-    icon: '',
+    icon: "",
     gallery: [],
-    website: '',
-    repositoryLink: '',
-    founder: '',
-    ceo: '',
+    website: "",
+    repositoryLink: "",
+    founder: "",
+    ceo: "",
     features: [],
     techStack: [],
-    launchDate: '',
-    userCount: '',
-    status: 'Live',
-    xAccount: '',
-    explainerVideo: ''
-  });
-  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+    launchDate: "",
+    userCount: "",
+    status: "Live",
+    xAccount: "",
+    explainerVideo: "",
+  })
+  const [toast, setToast] = useState({ show: false, message: "", type: "" })
 
   const showToast = (message, type) => {
-    setToast({ show: true, message, type });
-  };
+    setToast({ show: true, message, type })
+  }
 
   const steps = [
-    { title: 'Basic Information', icon: '1' },
-    { title: 'Details & Status', icon: '2' },
-    { title: 'Team Members', icon: '3' },
-    { title: 'Technical Info', icon: '4' },
-    { title: 'Links & Contact', icon: '5' },
-    { title: 'Media & Assets', icon: '6' }
-  ];
+    { title: "Basic Information", icon: "1" },
+    { title: "Details & Status", icon: "2" },
+    { title: "Team Members", icon: "3" },
+    { title: "Technical Info", icon: "4" },
+    { title: "Links & Contact", icon: "5" },
+    { title: "Media & Assets", icon: "6" },
+  ]
 
   const updateFormData = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
 
   const addToArray = (field, value) => {
     if (value.trim()) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [field]: [...prev[field], value.trim()]
-      }));
+        [field]: [...prev[field], value.trim()],
+      }))
     }
-  };
+  }
 
   const removeFromArray = (field, index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }));
-  };
+      [field]: prev[field].filter((_, i) => i !== index),
+    }))
+  }
 
   const submitForm = async () => {
     try {
+      console.log("Submitting form data:", formData)
+
       const response = await fetch(`${API_BASE_URL}/products`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      console.log("Create response status:", response.status)
+
       if (response.ok) {
-        showToast('Product created successfully!', 'success');
-        onRefetch();
+        showToast("Product created successfully!", "success")
+        onRefetch()
         setFormData({
-          name: '',
-          description: '',
-          alias: '',
-          category: 'DeFi',
+          name: "",
+          description: "",
+          alias: "",
+          category: "DeFi",
           verified: false,
           openSource: false,
           isApproved: true,
-          icon: '',
+          icon: "",
           gallery: [],
-          website: '',
-          repositoryLink: '',
-          founder: '',
-          ceo: '',
+          website: "",
+          repositoryLink: "",
+          founder: "",
+          ceo: "",
           features: [],
           techStack: [],
-          launchDate: '',
-          userCount: '',
-          status: 'Live',
-          xAccount: '',
-          explainerVideo: ''
-        });
-        setCurrentStep(0);
+          launchDate: "",
+          userCount: "",
+          status: "Live",
+          xAccount: "",
+          explainerVideo: "",
+        })
+        setCurrentStep(0)
       } else {
-        showToast('Failed to create product', 'error');
+        const errorData = await response.text()
+        console.error("Create error response:", errorData)
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
     } catch (error) {
-      showToast('Failed to create product', 'error');
+      console.error("Error creating product:", error)
+      showToast("Failed to create product", "error")
     }
-  };
+  }
 
   const ArrayInput = ({ field, placeholder, value }) => {
-    const [inputValue, setInputValue] = useState('');
-    
+    const [inputValue, setInputValue] = useState("")
+
     return (
       <div className="space-y-2">
         <div className="flex space-x-2">
@@ -459,18 +540,18 @@ const CreateProductForm = ({ onRefetch }) => {
             placeholder={placeholder}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                addToArray(field, inputValue);
-                setInputValue('');
+              if (e.key === "Enter") {
+                e.preventDefault()
+                addToArray(field, inputValue)
+                setInputValue("")
               }
             }}
           />
           <button
             type="button"
             onClick={() => {
-              addToArray(field, inputValue);
-              setInputValue('');
+              addToArray(field, inputValue)
+              setInputValue("")
             }}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
@@ -495,8 +576,8 @@ const CreateProductForm = ({ onRefetch }) => {
           ))}
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -508,7 +589,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => updateFormData('name', e.target.value)}
+                onChange={(e) => updateFormData("name", e.target.value)}
                 placeholder="e.g. Chatter"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -518,7 +599,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
               <textarea
                 value={formData.description}
-                onChange={(e) => updateFormData('description', e.target.value)}
+                onChange={(e) => updateFormData("description", e.target.value)}
                 placeholder="Provide a detailed description of your product, its purpose, and what problems it solves..."
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -530,7 +611,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="text"
                 value={formData.alias}
-                onChange={(e) => updateFormData('alias', e.target.value)}
+                onChange={(e) => updateFormData("alias", e.target.value)}
                 placeholder="e.g. chatter-app (used for URL slugs)"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -540,7 +621,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
               <select
                 value={formData.category}
-                onChange={(e) => updateFormData('category', e.target.value)}
+                onChange={(e) => updateFormData("category", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="DeFi">DeFi</option>
@@ -553,7 +634,7 @@ const CreateProductForm = ({ onRefetch }) => {
               </select>
             </div>
           </div>
-        );
+        )
       case 1:
         return (
           <div className="space-y-4">
@@ -561,7 +642,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
               <select
                 value={formData.status}
-                onChange={(e) => updateFormData('status', e.target.value)}
+                onChange={(e) => updateFormData("status", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="Live">Live</option>
@@ -575,7 +656,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="date"
                 value={formData.launchDate}
-                onChange={(e) => updateFormData('launchDate', e.target.value)}
+                onChange={(e) => updateFormData("launchDate", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -584,7 +665,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="text"
                 value={formData.userCount}
-                onChange={(e) => updateFormData('userCount', e.target.value)}
+                onChange={(e) => updateFormData("userCount", e.target.value)}
                 placeholder="e.g. 10000+"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -594,7 +675,7 @@ const CreateProductForm = ({ onRefetch }) => {
                 <input
                   type="checkbox"
                   checked={formData.verified}
-                  onChange={(e) => updateFormData('verified', e.target.checked)}
+                  onChange={(e) => updateFormData("verified", e.target.checked)}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm font-medium text-gray-700">Verified Product</span>
@@ -603,14 +684,14 @@ const CreateProductForm = ({ onRefetch }) => {
                 <input
                   type="checkbox"
                   checked={formData.openSource}
-                  onChange={(e) => updateFormData('openSource', e.target.checked)}
+                  onChange={(e) => updateFormData("openSource", e.target.checked)}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm font-medium text-gray-700">Open Source</span>
               </label>
             </div>
           </div>
-        );
+        )
       case 2:
         return (
           <div className="space-y-4">
@@ -619,7 +700,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="text"
                 value={formData.founder}
-                onChange={(e) => updateFormData('founder', e.target.value)}
+                onChange={(e) => updateFormData("founder", e.target.value)}
                 placeholder="Founder's name"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -629,13 +710,13 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="text"
                 value={formData.ceo}
-                onChange={(e) => updateFormData('ceo', e.target.value)}
+                onChange={(e) => updateFormData("ceo", e.target.value)}
                 placeholder="CEO's name"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
-        );
+        )
       case 3:
         return (
           <div className="space-y-4">
@@ -649,24 +730,20 @@ const CreateProductForm = ({ onRefetch }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Features</label>
-              <ArrayInput
-                field="features"
-                placeholder="Add feature"
-                value={formData.features}
-              />
+              <ArrayInput field="features" placeholder="Add feature" value={formData.features} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Repository Link</label>
               <input
                 type="url"
                 value={formData.repositoryLink}
-                onChange={(e) => updateFormData('repositoryLink', e.target.value)}
+                onChange={(e) => updateFormData("repositoryLink", e.target.value)}
                 placeholder="https://github.com/username/repo"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
-        );
+        )
       case 4:
         return (
           <div className="space-y-4">
@@ -675,7 +752,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="url"
                 value={formData.website}
-                onChange={(e) => updateFormData('website', e.target.value)}
+                onChange={(e) => updateFormData("website", e.target.value)}
                 placeholder="https://yourproduct.com"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -685,13 +762,13 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="text"
                 value={formData.xAccount}
-                onChange={(e) => updateFormData('xAccount', e.target.value)}
+                onChange={(e) => updateFormData("xAccount", e.target.value)}
                 placeholder="@yourproduct"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
-        );
+        )
       case 5:
         return (
           <div className="space-y-4">
@@ -700,7 +777,7 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="url"
                 value={formData.icon}
-                onChange={(e) => updateFormData('icon', e.target.value)}
+                onChange={(e) => updateFormData("icon", e.target.value)}
                 placeholder="https://example.com/icon.png"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -710,25 +787,21 @@ const CreateProductForm = ({ onRefetch }) => {
               <input
                 type="url"
                 value={formData.explainerVideo}
-                onChange={(e) => updateFormData('explainerVideo', e.target.value)}
+                onChange={(e) => updateFormData("explainerVideo", e.target.value)}
                 placeholder="https://youtube.com/watch?v=..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Gallery Images</label>
-              <ArrayInput
-                field="gallery"
-                placeholder="Add image URL"
-                value={formData.gallery}
-              />
+              <ArrayInput field="gallery" placeholder="Add image URL" value={formData.gallery} />
             </div>
           </div>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -737,11 +810,11 @@ const CreateProductForm = ({ onRefetch }) => {
         <div className="flex items-center justify-between">
           {steps.map((step, index) => (
             <div key={index} className="flex flex-col items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                index <= currentStep
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-200 text-gray-600'
-              }`}>
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
+                  index <= currentStep ? "bg-green-500 text-white" : "bg-gray-200 text-gray-600"
+                }`}
+              >
                 {index < currentStep ? <Check className="w-5 h-5" /> : step.icon}
               </div>
               <span className="mt-2 text-xs text-gray-600 text-center">{step.title}</span>
@@ -773,16 +846,16 @@ const CreateProductForm = ({ onRefetch }) => {
           <ChevronLeft className="w-4 h-4" />
           <span>Previous</span>
         </button>
-        
+
         {currentStep < steps.length - 1 ? (
           <button
             type="button"
             onClick={() => {
               if (currentStep === 0 && (!formData.name || !formData.description || !formData.alias)) {
-                showToast('Please fill in all required fields', 'error');
-                return;
+                showToast("Please fill in all required fields", "error")
+                return
               }
-              setCurrentStep(Math.min(steps.length - 1, currentStep + 1));
+              setCurrentStep(Math.min(steps.length - 1, currentStep + 1))
             }}
             className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-2"
           >
@@ -805,48 +878,52 @@ const CreateProductForm = ({ onRefetch }) => {
         message={toast.message}
         type={toast.type}
         show={toast.show}
-        onClose={() => setToast({ show: false, message: '', type: '' })}
+        onClose={() => setToast({ show: false, message: "", type: "" })}
       />
     </div>
-  );
-};
+  )
+}
 
-// Edit Product Modal
+// Edit Product Modal - FIXED VERSION
 const EditProductModal = ({ product, isOpen, onClose, onUpdate }) => {
-  const [formData, setFormData] = useState({});
-  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const [formData, setFormData] = useState({})
+  const [toast, setToast] = useState({ show: false, message: "", type: "" })
 
   useEffect(() => {
     if (product) {
-      setFormData({ ...product });
+      setFormData({ ...product })
     }
-  }, [product]);
+  }, [product])
 
   const showToast = (message, type) => {
-    setToast({ show: true, message, type });
-  };
+    setToast({ show: true, message, type })
+  }
 
   const handleUpdate = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/products/${product.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
       if (response.ok) {
-        showToast('Product updated successfully!', 'success');
-        onUpdate();
-        setTimeout(onClose, 1500);
+        showToast("Product updated successfully!", "success")
+        onUpdate()
+        setTimeout(onClose, 1500)
       } else {
-        showToast('Failed to update product', 'error');
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
     } catch (error) {
-      showToast('Failed to update product', 'error');
+      console.error("Error updating product:", error)
+      showToast("Failed to update product", "error")
     }
-  };
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -854,42 +931,39 @@ const EditProductModal = ({ product, isOpen, onClose, onUpdate }) => {
         <div className="p-6 border-b">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold">Edit Product</h2>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
-        
+
         <div className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
             <input
               type="text"
-              value={formData.name || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              value={formData.name || ""}
+              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <textarea
-              value={formData.description || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              value={formData.description || ""}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
               <select
-                value={formData.category || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                value={formData.category || ""}
+                onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="DeFi">DeFi</option>
@@ -901,12 +975,12 @@ const EditProductModal = ({ product, isOpen, onClose, onUpdate }) => {
                 <option value="Education">Education</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
               <select
-                value={formData.status || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
+                value={formData.status || ""}
+                onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="Live">Live</option>
@@ -916,52 +990,52 @@ const EditProductModal = ({ product, isOpen, onClose, onUpdate }) => {
               </select>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
               <input
                 type="url"
-                value={formData.website || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                value={formData.website || ""}
+                onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Founder</label>
               <input
                 type="text"
-                value={formData.founder || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, founder: e.target.value }))}
+                value={formData.founder || ""}
+                onChange={(e) => setFormData((prev) => ({ ...prev, founder: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={formData.verified || false}
-                onChange={(e) => setFormData(prev => ({ ...prev, verified: e.target.checked }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, verified: e.target.checked }))}
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-sm">Verified</span>
             </label>
-            
+
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={formData.openSource || false}
-                onChange={(e) => setFormData(prev => ({ ...prev, openSource: e.target.checked }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, openSource: e.target.checked }))}
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-sm">Open Source</span>
             </label>
           </div>
         </div>
-        
+
         <div className="p-6 border-t flex justify-end space-x-3">
           <button
             onClick={onClose}
@@ -969,36 +1043,38 @@ const EditProductModal = ({ product, isOpen, onClose, onUpdate }) => {
           >
             Cancel
           </button>
-          <button
-            onClick={handleUpdate}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
+          <button onClick={handleUpdate} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
             Update Product
           </button>
         </div>
-        
+
         <Toast
           message={toast.message}
           type={toast.type}
           show={toast.show}
-          onClose={() => setToast({ show: false, message: '', type: '' })}
+          onClose={() => setToast({ show: false, message: "", type: "" })}
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-// Main Admin Dashboard Component
+// Main Admin Dashboard Component - FIXED VERSION
 const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState('analytics');
-  const [editingProduct, setEditingProduct] = useState(null);
-  const { products, loading, error, refetch } = useProducts();
+  const [activeTab, setActiveTab] = useState("analytics")
+  const [editingProduct, setEditingProduct] = useState(null)
+  const { products, loading, error, refetch } = useProducts()
 
   const tabs = [
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'products', label: 'Products', icon: Package },
-    { id: 'create', label: 'Create Product', icon: Plus }
-  ];
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "products", label: "Products", icon: Package },
+    { id: "create", label: "Create Product", icon: Plus },
+  ]
+
+  // Debug logging
+  useEffect(() => {
+    console.log("AdminPage - Current state:", { products, loading, error })
+  }, [products, loading, error])
 
   if (loading) {
     return (
@@ -1011,14 +1087,14 @@ const AdminPage = () => {
                   <Package className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">SuperteamNG</h1>
+                  <h1 className="text-2xl font-bold text-gray-900">SuperteamNG Products</h1>
                   <p className="text-sm text-gray-600">Admin Dashboard</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-6">
             <Skeleton className="h-8 w-48" />
@@ -1031,7 +1107,7 @@ const AdminPage = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -1043,15 +1119,12 @@ const AdminPage = () => {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Dashboard</h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={refetch}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
+          <button onClick={refetch} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
             Try Again
           </button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -1065,40 +1138,40 @@ const AdminPage = () => {
                 <Package className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">SuperteamNG <span className='text-gray-900'>Products</span> </h1>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  SuperteamNG <span className="text-gray-900">Products</span>
+                </h1>
                 <p className="text-sm text-gray-600">Admin Dashboard</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">{products.length} Products</p>
-                <p className="text-xs text-gray-500">
-                  {products.filter(p => p.isApproved).length} Approved
-                </p>
+                <p className="text-xs text-gray-500">{products.filter((p) => p.isApproved).length} Approved</p>
               </div>
             </div>
           </div>
-          
+
           {/* Navigation Tabs */}
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
               {tabs.map((tab) => {
-                const Icon = tab.icon;
+                const Icon = tab.icon
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
                       activeTab === tab.id
-                        ? 'border-green-500 text-green-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? "border-green-500 text-green-600"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span>{tab.label}</span>
                   </button>
-                );
+                )
               })}
             </nav>
           </div>
@@ -1107,14 +1180,9 @@ const AdminPage = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'analytics' && <AnalyticsDashboard products={products} />}
-        {activeTab === 'products' && (
-          <ProductsManagement 
-            products={products} 
-            onRefetch={refetch}
-          />
-        )}
-        {activeTab === 'create' && <CreateProductForm onRefetch={refetch} />}
+        {activeTab === "analytics" && <AnalyticsDashboard products={products} />}
+        {activeTab === "products" && <ProductsManagement products={products} onRefetch={refetch} />}
+        {activeTab === "create" && <CreateProductForm onRefetch={refetch} />}
       </div>
 
       {/* Edit Product Modal */}
@@ -1125,7 +1193,7 @@ const AdminPage = () => {
         onUpdate={refetch}
       />
     </div>
-  );
-};
+  )
+}
 
-export default AdminPage;
+export default AdminPage
