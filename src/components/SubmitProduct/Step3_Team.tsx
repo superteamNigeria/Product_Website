@@ -33,7 +33,7 @@ const Step3_Team: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Founder */}
       <div>
-        <label className="block mb-1 font-medium">Founder:</label>
+        <label className="block mb-1 font-medium dark:text-white">Founder:</label>
         <input
           name="founder"
           value={data.founder}
@@ -46,7 +46,7 @@ const Step3_Team: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* CEO */}
       <div>
-        <label className="block mb-1 font-medium">CEO:</label>
+        <label className="block mb-1 font-medium dark:text-white">CEO:</label>
         <input
           name="ceo"
           value={data.ceo}
@@ -60,7 +60,7 @@ const Step3_Team: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Co-Founders */}
       <div>
-        <label className="block mb-1 font-medium">Co-Founders:</label>
+        <label className="block mb-1 font-medium dark:text-white">Co-Founders:</label>
         <p className="text-xs text-gray-500 mb-3">Add any co-founders (optional)</p>
         {data.coFounders.map((coFounder: string, index: number) => (
           <div key={index} className="flex gap-2 mb-3">

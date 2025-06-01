@@ -45,7 +45,7 @@ const Step6_Media: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Explainer Video */}
       <div>
-        <label className="block mb-1 font-medium">Explainer Video:</label>
+        <label className="block mb-1 font-medium dark:text-white">Explainer Video:</label>
         <input
           name="explainerVideo"
           value={data.explainerVideo}
@@ -59,7 +59,7 @@ const Step6_Media: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Gallery */}
       <div>
-        <label className="block mb-1 font-medium">Product Gallery:</label>
+        <label className="block mb-1 font-medium dark:text-white">Product Gallery:</label>
         <p className="text-xs text-gray-500 mb-3">Upload screenshots, logos, or other images showcasing your product</p>
         
         {/* File Upload Option */}

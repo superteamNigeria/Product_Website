@@ -53,7 +53,7 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Status */}
       <div>
-        <label className="block mb-1 font-medium">Product Status:</label>
+        <label className="block mb-1 font-medium dark:text-white">Product Status:</label>
         <select
           name="status"
           value={data.status}
@@ -71,7 +71,7 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Launch Date */}
       <div>
-        <label className="block mb-1 font-medium">Launch Date:</label>
+        <label className="block mb-1 font-medium dark:text-white">Launch Date:</label>
         <input
           name="launchDate"
           value={data.launchDate}
@@ -83,7 +83,7 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* User Count */}
       <div>
-        <label className="block mb-1 font-medium">Number of Active Users:</label>
+        <label className="block mb-1 font-medium dark:text-white">Number of Active Users:</label>
         <select
           name="userCount"
           value={data.userCount}
@@ -101,7 +101,7 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Features */}
       <div>
-        <label className="block mb-1 font-medium">Key Features:</label>
+        <label className="block mb-1 font-medium dark:text-white">Key Features:</label>
         <p className="text-xs text-gray-500 mb-3">List the main features and capabilities of your product</p>
         {data.features.map((feature: string, index: number) => (
           <div key={index} className="flex gap-2 mb-3">
@@ -142,7 +142,7 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
             onChange={handleChange}
             className="w-4 h-4 text-[#02834E] bg-gray-100 border-gray-300 rounded focus:ring-[#02834E] focus:ring-2"
           />
-          <label className="ml-2 text-sm font-medium">Verified Product</label>
+          <label className="ml-2 text-sm font-medium dark:text-white">Verified Product</label>
         </div>
         
         <div className="flex items-center">
@@ -153,7 +153,7 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
             onChange={handleChange}
             className="w-4 h-4 text-[#02834E] bg-gray-100 border-gray-300 rounded focus:ring-[#02834E] focus:ring-2"
           />
-          <label className="ml-2 text-sm font-medium">Open Source</label>
+          <label className="ml-2 text-sm font-medium dark:text-white">Open Source</label>
         </div>
       </div>
     </div>
