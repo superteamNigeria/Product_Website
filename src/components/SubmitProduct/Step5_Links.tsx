@@ -36,7 +36,7 @@ const Step5_Links: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Website */}
       <div>
-        <label className="block mb-1 font-medium">Website:</label>
+        <label className="block mb-1 font-medium dark:text-white">Website:</label>
         <input
           name="website"
           value={data.website}
@@ -50,7 +50,7 @@ const Step5_Links: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* X/Twitter Account */}
       <div>
-        <label className="block mb-1 font-medium">X (Twitter) Account:</label>
+        <label className="block mb-1 font-medium dark:text-white">X (Twitter) Account:</label>
         <input
           name="xAccount"
           value={data.xAccount}
@@ -64,7 +64,7 @@ const Step5_Links: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* App Store */}
       <div>
-        <label className="block mb-1 font-medium">App Store Presence:</label>
+        <label className="block mb-1 font-medium dark:text-white">App Store Presence:</label>
         <div className="space-y-4">
           {/* iOS App Store */}
           <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">

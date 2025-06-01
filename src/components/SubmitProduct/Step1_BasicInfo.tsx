@@ -28,7 +28,7 @@ const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Product Name */}
       <div>
-        <label className="block mb-1 font-medium">
+        <label className="block mb-1 font-medium dark:text-white">
           Product Name: <span className="text-red-500">*</span>
         </label>
         <input
@@ -44,7 +44,7 @@ const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Description */}
       <div>
-        <label className="block mb-1 font-medium">
+        <label className="block mb-1 font-medium dark:text-white">
           Description: <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -60,7 +60,7 @@ const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Alias/Short Name */}
       <div>
-        <label className="block mb-1 font-medium">
+        <label className="block mb-1 font-medium dark:text-white">
           Alias/Short Name: <span className="text-red-500">*</span>
         </label>
         <input
@@ -77,7 +77,7 @@ const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Category */}
       <div>
-        <label className="block mb-1 font-medium">
+        <label className="block mb-1 font-medium dark:text-white">
           Category: <span className="text-red-500">*</span>
         </label>
         <select

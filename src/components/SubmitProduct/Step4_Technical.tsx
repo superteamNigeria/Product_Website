@@ -33,7 +33,7 @@ const Step4_Technical: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Tech Stack */}
       <div>
-        <label className="block mb-1 font-medium">Technology Stack:</label>
+        <label className="block mb-1 font-medium dark:text-white">Technology Stack:</label>
         <p className="text-xs text-gray-500 mb-3">List the main technologies, frameworks, and tools used</p>
         {data.techStack.map((tech: string, index: number) => (
           <div key={index} className="flex gap-2 mb-3">
@@ -66,7 +66,7 @@ const Step4_Technical: React.FC<Props> = ({ data, onUpdate }) => {
 
       {/* Repository Link */}
       <div>
-        <label className="block mb-1 font-medium">Repository Link:</label>
+        <label className="block mb-1 font-medium dark:text-white">Repository Link:</label>
         <input
           name="repositoryLink"
           value={data.repositoryLink}
