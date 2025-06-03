@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 
 interface Product {
@@ -25,31 +25,17 @@ interface ProductCardProps {
   colors: string[];
 }
 
-const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface ProductCardDisplayProps {
+  searchQuery: string;
+  selectedCategory: string;
+  products: Product[];
+  loading: boolean;
+  error: string | null;
+}
+
+const ProductCardDisplay = ({ searchQuery, selectedCategory, products, loading, error }: ProductCardDisplayProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const PRODUCTS_PER_PAGE = 10;
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const url = 'https://superteamng-products-backend.vercel.app/api/products';
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
-        const data = await response.json();
-        setAllProducts(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -57,7 +43,7 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory }) => {
   }, [searchQuery, selectedCategory]);
 
   // Client-side filtering
-  const filteredProducts = allProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
     const matchesSearch = searchQuery ? (
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
