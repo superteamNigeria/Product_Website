@@ -4,7 +4,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { logo, whiteLogo } from "../constants/images";
+import { logo, logoDark, logoWhite, whiteLogo } from "../constants/images";
 import { filterColors } from "../constants/menu";
 import Button from "./ui/Button";
 import { ThemeToggle } from "./theme-toggle";
@@ -82,9 +82,9 @@ const Header = () => {
         {/* Left Section */}
         <div className="flex items-center gap-4">
           <Link to={"/"} className="flex-shrink-0">
-            <img src={logo} alt="logo" className="h-8 w-auto dark:hidden" />
+            <img src={logoWhite} alt="logo" className="h-8 w-auto dark:hidden" />
             <img
-              src={whiteLogo}
+              src={logoDark}
               alt="logo"
               className="h-8 w-auto hidden dark:block"
             />

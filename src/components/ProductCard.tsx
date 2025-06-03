@@ -71,12 +71,12 @@ const Badge = ({ children, variant }) => {
 };
 
 // Avatar component
-const Avatar = ({ src, alt }) => {
+const Avatar = ({ src, alt, className }) => {
   return (
     <img
       src={src}
       alt={alt}
-      className="w-10 h-10 rounded-full shadow-sm"
+      className={`w-12 h-12 rounded-full border-3 border-white ${className}`}
     />
   );
 };
@@ -104,7 +104,7 @@ const ProductCard = ({
 }: ProductCardProps) => {
     const avatars = [avatar1, avatar2, avatar3]
   return (
-    <div className="rounded-2xl p-6 max-w-md mx-auto">
+    <div className="rounded-2xl p-4 max-w-md mx-auto">
       {/* Header section */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
@@ -163,6 +163,7 @@ const ProductCard = ({
                 key={index}
                 src={avatar}
                 alt={`Team member ${index + 1}`}
+                className={index === 0 ? "bg-[#00F2FF]" : index === 1 ? "bg-[#C336F4]" : index === 2 ? "bg-[#19E6AD]" : ""}
               />
             ))}
           </div>
