@@ -1,14 +1,14 @@
 @font-face {
     font-family: "Archivo-Bold";
-    src: url("./assets//fonts/Archivo_SemiExpanded-Bold.ttf");
+    src: url("./fonts/Archivo_SemiExpanded-Bold.ttf");
 }
 @font-face {
     font-family: "Archivo-Regular";
-    src: url("./assets//fonts/Archivo_SemiExpanded-Regular.ttf");
+    src: url("./fonts/Archivo_SemiExpanded-Regular.ttf");
 }
 @font-face {
     font-family: "Archivo-SemiBold";
-    src: url("./assets//fonts/Archivo_SemiExpanded-SemiBold.ttf");
+    src: url("./fonts/Archivo_SemiExpanded-SemiBold.ttf");
 }
 
 @import "tailwindcss";

@@ -108,7 +108,7 @@ const ProductCard = ({
       {/* Header section */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h2 className="font-bold text-2xl text-[#1E1E1E] dark:text-white mb-3 leading-8">{name}</h2>
+          <h2 className="font-bold text-3xl text-[#1E1E1E] dark:text-white mb-3 leading-8">{name}</h2>
 
           {/* Category badges */}
           <div className="flex gap-2 mb-4 text-center">
@@ -133,7 +133,7 @@ const ProductCard = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Twitter size={20} />
+            <Twitter size={20}  />
           </a>
           <a
             href={website}
@@ -141,7 +141,7 @@ const ProductCard = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Globe size={20} />
+            <Globe size={20}  />
           </a>
         </div>
       </div>

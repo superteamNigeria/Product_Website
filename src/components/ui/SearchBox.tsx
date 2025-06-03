@@ -20,16 +20,10 @@ const SearchBox = ({
       <div className="flex items-center w-full gap-2">
         <div className="flex items-center w-full bg-[#E2E4E9] dark:bg-[#20232D] px-3 py-2.5 rounded-full">
           <Search
-            color="#02834E"
+            color={searchQuery ? "#227D39" : "#868C98"}
             width={20}
             height={20}
-            className="flex-shrink-0 dark:hidden"
-          />
-          <Search
-            color="#868C98"
-            width={20}
-            height={20}
-            className="flex-shrink-0 hidden dark:block"
+            className="flex-shrink-0"
           />
           <input
             type="text"
@@ -45,7 +39,7 @@ const SearchBox = ({
           onClick={handleColorPaletteToggle}
         >
           <SlidersHorizontal
-            color="#02834E"
+            color={isColorPaletteVisible ? "#227D39" : "#868C98"}
             width={20}
             height={20}
             className="flex-shrink-0"
