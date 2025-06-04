@@ -1,86 +1,170 @@
 [
-    {
-        "name": "Ribh Fiance",
-        "image": "https://via.placeholder.com/150",
-        "info": [
-            {
-                "description": "Decentralized ecosystem for global on-chain commerce, marketplace and payments.",
-                "categories": ["PayFi", "Stablecoins", "Live"],
-                "website": "https://example.com",
-                "xLink": "https://x.com",
-                "users": 200,
-                "brandColor": ["#DC97EF", "#223FD3"]
-            }
-        ]
-    },
-    {
-        "name": "Verxio",
-        "image": "https://via.placeholder.com/150",
-        "info": [
-            {
-                "description": "Pay bills and book flight with stablecoins",
-                "categories": ["RWAs", "Live"],
-                "website": "https://example2.com",
-                "xLink": "https://x2.com",
-                "users": 300,
-                "brandColor": ["#01AFEB"]
-            }
-        ]
-    },
-    {
-        "name": "NectarFi 🐝",
-        "image": "https://via.placeholder.com/150",
-        "info": [
-            {
-                "description": "Your Personal FInance Savings App",
-                "categories": ["DeFi", "Stablecoins", "Live"],
-                "website": "https://example3.com",
-                "xLink": "https://x3.com",
-                "users": 400,
-                "brandColor": ["#2E2214"]
-            }
-        ]
-    },
-    {
-        "name": "Paj Cash",
-        "image": "https://via.placeholder.com/150",
-        "info": [
-            {
-                "description": "Bridging the gap between crypto and cash",
-                "categories": ["PayFi", "Live"],
-                "website": "https://example4.com",
-                "xLink": "https://x4.com",
-                "users": 500,
-                "brandColor": ["#001AFF"]
-            }
-        ]
-    },
-    {
-        "name": "HeySolana",
-        "image": "https://via.placeholder.com/150",
-        "info": [
-            {
-                "description": "Your Voice powering solana transactions",
-                "categories": ["PayFi", "AI", "Live"],
-                "website": "https://example5.com",
-                "xLink": "https://x5.com",
-                "users": 600,
-                "brandColor": ["#C336F4", "#19E6AD"]
-            }
-        ]
-    },
-    {
-        "name": "thejajaproject",
-        "image": "https://via.placeholder.com/150",
-        "info": [
-            {
-                "description": "The Future Remembers its Kings. Are you ready to rewrite history?",
-                "categories": ["Gaming"],
-                "website": "https://example6.com",
-                "xLink": "https://x6.com",
-                "users": 700,
-                "brandColor": ["#193759"]
-            }
-        ]
-    }
+  {
+    "id": "ribh-fiance",
+    "name": "Ribh Fiance",
+    "description": "Decentralized ecosystem for global on-chain commerce, marketplace and payments.",
+    "category": "PayFi",
+    "website": "https://example.com",
+    "xAccount": "https://x.com",
+    "userCount": 200,
+    "transactionVolume": 1200000,
+    "features": ["Stablecoins"],
+    "colors": ["#DC97EF", "#223FD3"],
+    "status": "Live",
+    "about": "Ribh Fiance is a next-generation decentralized financial ecosystem designed to power global on-chain commerce. It provides a full-stack platform for digital merchants and users to trade goods and services using stablecoins across a decentralized marketplace. Built with interoperability and scalability at its core, Ribh Fiance offers a seamless experience for buyers and sellers, eliminating the inefficiencies of traditional payment rails. Whether you’re running a storefront or making everyday purchases, Ribh empowers you to transact with speed, security, and minimal fees. With support for cross-border commerce, automated escrow, vendor ratings, and a curated marketplace interface, Ribh Fiance is pioneering a future where crypto is not just an investment — it’s how commerce works.",
+    "team": [
+      {
+        "name": "Amina Yusuf",
+        "image": "https://example.com/team/amina.jpg",
+        "position": "Founder & CEO",
+        "twitter": "https://twitter.com/amina_yusuf"
+      },
+      {
+        "name": "David Ekene",
+        "image": "https://example.com/team/david.jpg",
+        "position": "CTO",
+        "twitter": "https://twitter.com/david_ekene"
+      }
+    ]
+  },
+  {
+    "id": "verxio",
+    "name": "Verxio",
+    "description": "Pay bills and book flight with stablecoins",
+    "category": "RWAs",
+    "website": "https://example2.com",
+    "xAccount": "https://x2.com",
+    "userCount": 300,
+    "transactionVolume": 850000,
+    "features": [],
+    "colors": ["#01AFEB"],
+    "status": "Live",
+    "about": "Verxio is transforming how everyday financial activities are conducted by making it possible to pay bills and book flights using stablecoins. Bridging the gap between crypto users and real-world utility, Verxio provides a simple and user-friendly interface for managing your finances directly on-chain. Whether you’re settling your electricity bill, renewing your subscription services, or planning international travel, Verxio ensures that stablecoin users enjoy the same convenience and access as those using fiat. By enabling direct on-chain payments for essential services, Verxio is accelerating the global shift toward decentralized finance with real-world asset (RWA) integrations.",
+    "team": [
+      {
+        "name": "Chika Obasi",
+        "image": "https://example.com/team/chika.jpg",
+        "position": "Product Lead",
+        "twitter": "https://twitter.com/chika_obasi"
+      },
+      {
+        "name": "Lola Ogun",
+        "image": "https://example.com/team/lola.jpg",
+        "position": "Head of Partnerships",
+        "twitter": "https://twitter.com/lola_ogun"
+      }
+    ]
+  },
+  {
+    "id": "nectarfi",
+    "name": "NectarFi 🐝",
+    "description": "Your Personal FInance Savings App",
+    "category": "DeFi",
+    "website": "https://example3.com",
+    "xAccount": "https://x3.com",
+    "userCount": 400,
+    "transactionVolume": 650000,
+    "features": ["Stablecoins"],
+    "colors": ["#2E2214"],
+    "status": "Live",
+    "about": "NectarFi is your intelligent savings companion, helping users build financial discipline and long-term stability through DeFi-powered tools. Designed for both crypto natives and beginners, NectarFi uses yield-generating stablecoin strategies to grow your savings while you sleep. The platform offers auto-savings rules, goal-based planning, and smart reminders, all wrapped in a friendly and intuitive user interface. With NectarFi, your money isn’t just stored — it works for you. The app also includes social savings features like group pots and reward-based savings challenges, gamifying the experience of building wealth.",
+    "team": [
+      {
+        "name": "Tomi Ade",
+        "image": "https://example.com/team/tomi.jpg",
+        "position": "Lead Engineer",
+        "twitter": "https://twitter.com/tomi_ade"
+      },
+      {
+        "name": "Nneka Okoro",
+        "image": "https://example.com/team/nneka.jpg",
+        "position": "UX Designer",
+        "twitter": "https://twitter.com/nneka_okoro"
+      }
+    ]
+  },
+  {
+    "id": "paj-cash",
+    "name": "Paj Cash",
+    "description": "Bridging the gap between crypto and cash",
+    "category": "PayFi",
+    "website": "https://example4.com",
+    "xAccount": "https://x4.com",
+    "userCount": 500,
+    "transactionVolume": 400000,
+    "features": [],
+    "colors": ["#001AFF"],
+    "status": "Live",
+    "about": "Paj Cash is on a mission to seamlessly connect the world of cryptocurrency with real-world cash usage. Focused on emerging markets, Paj Cash empowers users to on-ramp and off-ramp between crypto and fiat with ease. The platform supports peer-to-peer (P2P) cash exchanges, agent networks, and merchant integrations that let users pay or withdraw funds without needing a bank account. Paj Cash simplifies everyday crypto usage for users in underserved regions, promoting financial inclusion and enabling a broader demographic to tap into digital finance. Whether you're sending remittances or cashing out locally, Paj makes crypto practical.",
+    "team": [
+      {
+        "name": "Kelvin Musa",
+        "image": "https://example.com/team/kelvin.jpg",
+        "position": "Community Manager",
+        "twitter": "https://twitter.com/kelvin_musa"
+      },
+      {
+        "name": "Fatima Usman",
+        "image": "https://example.com/team/fatima.jpg",
+        "position": "Operations Lead",
+        "twitter": "https://twitter.com/fatima_usman"
+      }
+    ]
+  },
+  {
+    "id": "heysolana",
+    "name": "HeySolana",
+    "description": "Your Voice powering solana transactions",
+    "category": "PayFi",
+    "website": "https://example5.com",
+    "xAccount": "https://x5.com",
+    "userCount": 600,
+    "transactionVolume": 520000,
+    "features": ["AI"],
+    "colors": ["#C336F4", "#19E6AD"],
+    "status": "Live",
+    "about": "HeySolana is redefining how users interact with crypto by enabling voice-activated transactions on the Solana blockchain. Using advanced AI-powered natural language processing, HeySolana allows users to send tokens, check balances, and manage wallets—all through simple voice commands. It’s built for speed, security, and convenience, especially for users on the go or those new to crypto interfaces. Beyond its voice features, HeySolana is actively integrating with popular dApps and payment platforms to offer full-stack interaction capabilities. The future of frictionless finance is here—and you don’t even need to type.",
+    "team": [
+      {
+        "name": "Grace Ibe",
+        "image": "https://example.com/team/grace.jpg",
+        "position": "AI Engineer",
+        "twitter": "https://twitter.com/grace_ibe"
+      },
+      {
+        "name": "Tope Olatunji",
+        "image": "https://example.com/team/tope.jpg",
+        "position": "Voice UX Lead",
+        "twitter": "https://twitter.com/tope_olatunji"
+      }
+    ]
+  },
+  {
+    "id": "thejajaproject",
+    "name": "thejajaproject",
+    "description": "The Future Remembers its Kings...",
+    "category": "Gaming",
+    "website": "https://example6.com",
+    "xAccount": "https://x6.com",
+    "userCount": 700,
+    "transactionVolume": 1000000,
+    "features": [],
+    "colors": ["#193759"],
+    "status": "",
+    "about": "thejajaproject is a culturally immersive gaming experience that blends storytelling, strategy, and Web3 technology to create a game world where history is yours to reshape. Inspired by African heritage, mythology, and royalty, players enter a decentralized universe where they compete for influence, resources, and power. Each character, kingdom, and quest is built on-chain, ensuring true ownership and player-driven evolution of the game’s narrative. Through NFTs, DAOs, and community governance, thejajaproject turns passive players into active storytellers. This is more than a game—it’s a movement to reimagine history through the lens of empowerment and digital sovereignty.",
+    "team": [
+      {
+        "name": "Obinna Eze",
+        "image": "https://example.com/team/obinna.jpg",
+        "position": "Creative Director",
+        "twitter": "https://twitter.com/obinna_eze"
+      },
+      {
+        "name": "Sade Adewale",
+        "image": "https://example.com/team/sade.jpg",
+        "position": "Lore & Narrative Lead",
+        "twitter": "https://twitter.com/sade_adewale"
+      }
+    ]
+  }
 ]

@@ -5,7 +5,7 @@ export default function ExpandableNavigationBar() {
   
   const navigationItems = [
     { hex: '#A8E6CF', name: 'Live on Mainnet' },
-    { hex: '#06B6D4', name: 'DePIN' },
+    { hex: '#06B6D4', name: 'DePIN' }, 
     { hex: '#10B981', name: 'DeFi' },
     { hex: '#F59E0B', name: 'PayFi' },
     { hex: '#DC2626', name: 'RWAs' },
@@ -47,7 +47,7 @@ export default function ExpandableNavigationBar() {
               <span className={`font-medium whitespace-nowrap transition-all duration-300 ease-out ${
                 isExpanded ? 'text-sm' : 'text-xs'
               } ${
-                item.isSpecial || item.hex === '#374151' || item.hex === '#7C3AED' 
+                item.hex === '#374151' || item.hex === '#7C3AED' 
                   ? 'text-white' 
                   : item.hex === '#A8E6CF' || item.hex === '#F59E0B' || item.hex === '#0EA5E9' || item.hex === '#06B6D4' || item.hex === '#A8E6CF'
                     ? 'text-black'
