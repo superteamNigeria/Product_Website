@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({ title, href, colors = [] }) => {
   };
 
   return (
-    <Link to={`product/${href}`}>
+    <Link to={`${href}`}>
     <button 
       className="bg-[#E6F3ED] dark:bg-[#20232D]  text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap "
       style={{
