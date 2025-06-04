@@ -15,41 +15,28 @@ const SubmitProduct = () => {
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    // Basic Info
     name: "",
     description: "",
     alias: "",
     category: "",
-
-    // Details & Status
     verified: false,
     openSource: false,
     status: "",
     launchDate: "",
     userCount: "",
     features: [""],
-
-    // Team
+    brand_colors: [""],
     founder: "",
     ceo: "",
     coFounders: [""],
-
-    // Technical
     techStack: [""],
     repositoryLink: "",
-    brand_colors: [""],
-
-    // Links & Contact
     website: "",
     xAccount: "",
-
-    // Media & Assets
     gallery: [],
     explainerVideo: "",
     playstore: [false, ""],
     appstore: [false, ""],
-
-    // Additional
     metadata: {},
   });
 

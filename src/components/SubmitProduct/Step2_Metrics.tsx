@@ -3,6 +3,7 @@ import React from "react";
 interface Props {
   data: any;
   onUpdate: (data: any) => void;
+  errors?: Record<string, string>;
 }
 
 const statusOptions = [
@@ -20,7 +21,7 @@ const userCountOptions = [
   { value: "100k+", label: "100,000+" },
 ];
 
-const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
+const Step2_Details: React.FC<Props> = ({ data, onUpdate, errors }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
@@ -67,6 +68,9 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
             </option>
           ))}
         </select>
+        {errors?.status && (
+          <p className="text-red-500 text-sm mt-1">{errors.status}</p>
+        )}
       </div>
 
       {/* Launch Date */}
@@ -79,6 +83,9 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
           type="date"
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
+        {errors?.launchDate && (
+          <p className="text-red-500 text-sm mt-1">{errors.launchDate}</p>
+        )}
       </div>
 
       {/* User Count */}
@@ -97,6 +104,9 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
             </option>
           ))}
         </select>
+        {errors?.userCount && (
+          <p className="text-red-500 text-sm mt-1">{errors.userCount}</p>
+        )}
       </div>
 
       {/* Features */}
@@ -123,6 +133,9 @@ const Step2_Details: React.FC<Props> = ({ data, onUpdate }) => {
             )}
           </div>
         ))}
+        {errors?.features && (
+          <p className="text-red-500 text-sm mt-1">{errors.features}</p>
+        )}
         <button
           type="button"
           onClick={addFeature}

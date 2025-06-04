@@ -3,9 +3,10 @@ import React from "react";
 interface Props {
   data: any;
   onUpdate: (data: any) => void;
+  errors?: Record<string, string>;
 }
 
-const Step6_Media: React.FC<Props> = ({ data, onUpdate }) => {
+const Step6_Media = ({ data, onUpdate, errors }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     onUpdate({ [name]: value });
@@ -30,9 +31,6 @@ const Step6_Media: React.FC<Props> = ({ data, onUpdate }) => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      // This is a placeholder for file upload functionality
-      // In a real implementation, you would upload files to a server
-      // and get back URLs to store in the gallery array
       console.log("Files selected:", files);
       alert("File upload functionality would be implemented here. For now, please enter image URLs manually.");
     }
@@ -54,6 +52,9 @@ const Step6_Media: React.FC<Props> = ({ data, onUpdate }) => {
           placeholder="e.g. https://youtube.com/watch?v=... or https://vimeo.com/..."
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
+        {errors?.explainerVideo && (
+          <p className="text-red-500 text-sm mt-1">{errors.explainerVideo}</p>
+        )}
         <p className="text-xs text-gray-500 mt-1">Link to a video that demonstrates or explains your product</p>
       </div>
 
@@ -61,7 +62,7 @@ const Step6_Media: React.FC<Props> = ({ data, onUpdate }) => {
       <div>
         <label className="block mb-1 font-medium dark:text-white">Product Gallery:</label>
         <p className="text-xs text-gray-500 mb-3">Upload screenshots, logos, or other images showcasing your product</p>
-        
+
         {/* File Upload Option */}
         <div className="mb-4">
           <input
@@ -122,6 +123,10 @@ const Step6_Media: React.FC<Props> = ({ data, onUpdate }) => {
           >
             + Add Another Image
           </button>
+        )}
+
+        {errors?.gallery && (
+          <p className="text-red-500 text-sm mt-1">{errors.gallery}</p>
         )}
       </div>
 

@@ -3,6 +3,7 @@ import React from "react";
 interface Props {
   data: any;
   onUpdate: (data: any) => void;
+  errors?: Record<string, string>;
 }
 
 const categoryOptions = [
@@ -15,11 +16,14 @@ const categoryOptions = [
   { value: "Education", label: "Education" },
 ];
 
-const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+const Step1_BasicInfo = ({ data, onUpdate, errors }: Props) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     onUpdate({ [name]: value });
   };
+
 
   return (
     <div className="space-y-8">
@@ -40,6 +44,8 @@ const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
           required
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
+        {errors?.name && ( <p className="text-red-500 text-sm mt-1">{errors.name}</p>)}
+
       </div>
 
       {/* Description */}
@@ -56,6 +62,10 @@ const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
           rows={4}
           className="w-full border border-[#E2E4E9] rounded-lg px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white resize-none"
         />
+
+        {errors?.description && (
+          <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+        )}
       </div>
 
       {/* Alias/Short Name */}
@@ -72,6 +82,9 @@ const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
           required
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
+        {errors?.alias && (
+          <p className="text-red-500 text-sm mt-1">{errors.alias}</p>
+        )}
         <p className="text-xs text-gray-500 mt-1">This will be used in URLs and must be unique</p>
       </div>
 
@@ -94,6 +107,11 @@ const Step1_BasicInfo: React.FC<Props> = ({ data, onUpdate }) => {
             </option>
           ))}
         </select>
+
+        {errors?.category && (
+          <p className="text-red-500 text-sm mt-1">{errors.category}</p>
+        )}
+
       </div>
     </div>
   );
