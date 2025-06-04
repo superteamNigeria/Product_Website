@@ -1,6 +1,7 @@
 import { ChevronRight, Globe, Twitter } from "lucide-react";
 import React, { use } from "react";
 import { avatar1, avatar2, avatar3, avatar4, avatar5 } from "../constants/images";
+import { Link } from "react-router-dom";
 
 // Animated Button component
 interface ButtonProps {
@@ -26,9 +27,9 @@ const Button: React.FC<ButtonProps> = ({ title, href, colors = [] }) => {
   }
 
   return (
+    <Link to={`product/${href}`}>
     <button 
       className="bg-[#E6F3ED] dark:bg-[#20232D]  text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap "
-      onClick={() => window.location.href = href}
       style={{
         background: colors.length === 2 ? getHoverStyle() : undefined,
         backgroundColor: colors.length === 1 ? colors[0] : undefined,
@@ -43,6 +44,8 @@ const Button: React.FC<ButtonProps> = ({ title, href, colors = [] }) => {
         </div>
       </span>
     </button>
+    </Link>
+    
   );
 };
 
