@@ -3,9 +3,10 @@ import React from "react";
 interface Props {
   data: any;
   onUpdate: (data: any) => void;
+  errors?: Record<string, string>;
 }
 
-const Step5_Links: React.FC<Props> = ({ data, onUpdate }) => {
+const Step5_Links = ({ data, onUpdate, errors }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     onUpdate({ [name]: value });
@@ -45,6 +46,9 @@ const Step5_Links: React.FC<Props> = ({ data, onUpdate }) => {
           placeholder="e.g. https://yourproduct.com"
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
+        {errors?.website && (
+          <p className="text-red-500 text-sm mt-1">{errors.website}</p>
+        )}
         <p className="text-xs text-gray-500 mt-1">Your product's official website or landing page</p>
       </div>
 
@@ -59,6 +63,9 @@ const Step5_Links: React.FC<Props> = ({ data, onUpdate }) => {
           placeholder="e.g. @yourproduct or https://x.com/yourproduct"
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
+        {errors?.xAccount && (
+          <p className="text-red-500 text-sm mt-1">{errors.xAccount}</p>
+        )}
         <p className="text-xs text-gray-500 mt-1">Your product's X (formerly Twitter) handle or profile URL</p>
       </div>
 
