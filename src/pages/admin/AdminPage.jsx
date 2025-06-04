@@ -26,7 +26,7 @@ import { logo, whiteLogo } from "../../constants/images";
 
 const ENV = {
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || "",
-  ADMIN_PASSWORDS: JSON.parse(import.meta.env.VITE_ADMIN_PASSWORDS) || {"1820": "Skipp"},
+  ADMIN_PASSWORDS: JSON.parse(import.meta.env.VITE_ADMIN_PASSWORDS || '{}'),
 };
 
 
