@@ -1,1199 +1,1070 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronLeft, ChevronRight, Plus, Edit, Trash2, Check, X, BarChart3, Package } from "lucide-react"
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
+import {
+  Search,
+  Filter,
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  Clock,
+  FileText,
+  Home,
+  Info,
+  Phone,
+  ChevronDown,
+  Download,
+  Plus,
+} from "lucide-react"
+import { logo, whiteLogo } from "../../constants/images";
 
-// API Base URL
-const API_BASE_URL = "https://superteamng-products-backend.vercel.app/api"
 
-// Custom hooks for API calls - FIXED VERSION
-const useProducts = () => {
+
+const ENV = {
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || "",
+  ADMIN_PASSWORDS: JSON.parse(import.meta.env.VITE_ADMIN_PASSWORDS) || {"1820": "Skipp"},
+};
+
+
+const AdminDashboard = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [showAdminSwitcher, setShowAdminSwitcher] = useState(false)
+  const [switchingAdmin, setSwitchingAdmin] = useState(false)
+  const [activeTab, setActiveTab] = useState("Dashboard")
   const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filterStatus, setFilterStatus] = useState("All")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [showFilters, setShowFilters] = useState(false)
+  const [selectedProducts, setSelectedProducts] = useState([])
+  const [selectAll, setSelectAll] = useState(false)
+  const [showActionModal, setShowActionModal] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [bulkActionLoading, setBulkActionLoading] = useState(false)
+  const [showBulkActions, setShowBulkActions] = useState(false)
 
-  const fetchProducts = async () => {
+  // Bulk Actions Functions
+  const handleBulkApprove = async () => {
+    if (selectedProducts.length === 0) return
+
+    setBulkActionLoading(true)
     try {
-      setLoading(true)
-      setError(null)
+      await bulkUpdateProducts(selectedProducts, "Approved")
+      await fetchProducts() // Refresh data
+      setSelectedProducts([])
+      setSelectAll(false)
+      alert(`Successfully approved ${selectedProducts.length} products`)
+    } catch (err) {
+      alert("Failed to approve products. Please try again.")
+    } finally {
+      setBulkActionLoading(false)
+    }
+  }
 
-      console.log("Fetching products from:", `${API_BASE_URL}/products`)
+  const handleBulkReject = async () => {
+    if (selectedProducts.length === 0) return
 
-      const response = await fetch(`${API_BASE_URL}/products`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      })
+    if (!window.confirm(`Are you sure you want to reject ${selectedProducts.length} products?`)) {
+      return
+    }
 
-      console.log("Response status:", response.status)
-      console.log("Response ok:", response.ok)
+    setBulkActionLoading(true)
+    try {
+      await bulkUpdateProducts(selectedProducts, "Rejected")
+      await fetchProducts() // Refresh data
+      setSelectedProducts([])
+      setSelectAll(false)
+      alert(`Successfully rejected ${selectedProducts.length} products`)
+    } catch (err) {
+      alert("Failed to reject products. Please try again.")
+    } finally {
+      setBulkActionLoading(false)
+    }
+  }
 
+  const handleBulkDelete = async () => {
+    if (selectedProducts.length === 0) return
+
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${selectedProducts.length} products? This action cannot be undone.`,
+      )
+    ) {
+      return
+    }
+
+    setBulkActionLoading(true)
+    try {
+      const deletePromises = selectedProducts.map((id) => deleteProduct(id))
+      await Promise.all(deletePromises)
+      await fetchProducts() // Refresh data
+      setSelectedProducts([])
+      setSelectAll(false)
+      alert(`Successfully deleted ${selectedProducts.length} products`)
+    } catch (err) {
+      alert("Failed to delete products. Please try again.")
+    } finally {
+      setBulkActionLoading(false)
+    }
+  }
+
+  // Export Functions
+  const exportToJSON = (data, filename = "products-export") => {
+    const jsonData = JSON.stringify(data, null, 2)
+    const blob = new Blob([jsonData], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `${filename}-${new Date().toISOString().split("T")[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const exportSelectedProducts = () => {
+    const selectedData = products.filter((product) => selectedProducts.includes(product.id))
+    exportToJSON(selectedData, "selected-products")
+  }
+
+  const exportAllProducts = () => {
+    exportToJSON(filteredProducts, "all-products")
+  }
+
+  const exportFilteredProducts = () => {
+    exportToJSON(filteredProducts, "filtered-products")
+  }
+
+  // Sleek Passcode Component
+  const PasscodeScreen = ({ isSwitch = false }) => {
+    const [inputPasscode, setInputPasscode] = useState("")
+    const [shakeAnimation, setShakeAnimation] = useState(false)
+
+    const handleNumberPress = (num) => {
+      if (inputPasscode.length < 4) {
+        setInputPasscode((prev) => prev + num)
+      }
+    }
+
+    const handleDelete = () => {
+      setInputPasscode((prev) => prev.slice(0, -1))
+    }
+
+    const handleClear = () => {
+      setInputPasscode("")
+    }
+
+    const handleSubmit = () => {
+      const password = Number.parseInt(inputPasscode)
+      if (ENV.ADMIN_PASSWORDS[password]) {
+        setIsAuthenticated(true)
+        setCurrentUser(ENV.ADMIN_PASSWORDS[password])
+        setSwitchingAdmin(false)
+        setShowAdminSwitcher(false)
+      } else {
+        setShakeAnimation(true)
+        setInputPasscode("")
+        setTimeout(() => setShakeAnimation(false), 600)
+      }
+    }
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#00ad44] to-slate-900 flex items-center justify-center p-4">
+        <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-sm shadow-2xl border border-white/20">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                {/* <span className="text-white font-bold text-2xl">ST</span> */}
+                <img src={whiteLogo} alt="logo" className="h-8 w-auto dark:hidden" />
+
+              </div>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">{isSwitch ? "Switch Admin" : "Admin Dashboard"}</h1>
+            <p className="text-gray-600">Enter your passcode to continue</p>
+          </div>
+
+          <div className="mb-8">
+            <div className={`flex justify-center space-x-4 mb-8 ${shakeAnimation ? "animate-bounce" : ""}`}>
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className={`w-5 h-5 rounded-full border-2 transition-all duration-300 ${
+                    i < inputPasscode.length
+                      ? "bg-gradient-to-r from-green-400 to-green-600 border-green-500 shadow-lg"
+                      : "border-gray-300 bg-gray-50"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => handleNumberPress(num)}
+                  className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-xl font-semibold text-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  {num}
+                </button>
+              ))}
+              <button
+                onClick={handleClear}
+                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-sm font-semibold text-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                Clear
+              </button>
+              <button
+                onClick={() => handleNumberPress(0)}
+                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-xl font-semibold text-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                0
+              </button>
+              <button
+                onClick={handleDelete}
+                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-lg font-semibold text-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                ⌫
+              </button>
+            </div>
+
+            {inputPasscode.length === 4 && (
+              <button
+                onClick={handleSubmit}
+                className="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                {isSwitch ? "Switch Admin" : "Enter Dashboard"}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Admin Switcher Component
+  const AdminSwitcher = () => (
+    <div className="relative">
+      <button
+        onClick={() => setShowAdminSwitcher(!showAdminSwitcher)}
+        className="flex items-center space-x-3 bg-[#02834e]  text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl"
+      >
+        <ChevronDown className="w-4 h-4" />
+        <span className="font-medium">{currentUser}</span>
+        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+          <span className="text-sm font-bold">{currentUser?.[0]}</span>
+        </div>
+      </button>
+
+      {showAdminSwitcher && (
+        <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 py-2 min-w-48 z-50">
+          <div className="px-4 py-2 border-b border-gray-100">
+            <p className="text-sm text-gray-500">Switch to another admin</p>
+          </div>
+          {Object.entries(ENV.ADMIN_PASSWORDS).map(([pin, username]) => (
+            <button
+              key={pin}
+              onClick={() => {
+                setSwitchingAdmin(true)
+                setShowAdminSwitcher(false)
+              }}
+              className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 transition-colors"
+            >
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 font-medium text-sm">{username[0]}</span>
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">{username}</p>
+                <p className="text-xs text-gray-500">PIN: {pin}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+
+  // Action Modal Component
+  const ActionModal = ({ product, onClose }) => {
+    const [newStatus, setNewStatus] = useState(
+      product?.isApproved ? "Approved" : "Unapproved",
+    )
+    const [updating, setUpdating] = useState(false)
+
+    const handleStatusChange = async () => {
+      setUpdating(true)
+      try {
+        await updateProductStatus(product.id, newStatus)
+        await fetchProducts() // Refresh data
+        alert("Product status updated successfully!")
+        onClose()
+      } catch (err) {
+        alert("Failed to update product status. Please try again.")
+      } finally {
+        setUpdating(false)
+      }
+    }
+
+    const handleViewProduct = () => {
+      window.open(`/product/${product.id}`, "_blank")
+    }
+
+    const handleDeleteProduct = async () => {
+      if (window.confirm("Are you sure you want to delete this product?")) {
+        setUpdating(true)
+        try {
+          await deleteProduct(product.id)
+          await fetchProducts() // Refresh data
+          alert("Product deleted successfully!")
+          onClose()
+        } catch (err) {
+          alert("Failed to delete product. Please try again.")
+        } finally {
+          setUpdating(false)
+        }
+      }
+    }
+
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900">Product Actions</h3>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <XCircle className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Approval Status</label>
+              <select
+                value={newStatus}
+                onChange={(e) => setNewStatus(e.target.value)}
+                disabled={updating}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+              >
+                <option value="Approved">Approved</option>
+                <option value="Unapproved">Unapproved</option>
+              </select>
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={handleStatusChange}
+                disabled={updating}
+                className="flex-1 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white py-2 px-4 rounded-lg transition-colors"
+              >
+                {updating ? "Updating..." : "Update Status"}
+              </button>
+              <button
+                onClick={handleViewProduct}
+                disabled={updating}
+                className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+              >
+                <Eye className="w-4 h-4" />
+                <span>View</span>
+              </button>
+            </div>
+
+            <button
+              onClick={handleDeleteProduct}
+              disabled={updating}
+              className="w-full bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>{updating ? "Deleting..." : "Delete Product"}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // API Functions
+  const fetchProducts = async (endpoint = "/api/products/admin/all") => {
+    setLoading(true)
+    setError("")
+    try {
+      const response = await fetch(`${ENV.API_BASE_URL}${endpoint}`)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-
       const data = await response.json()
-      console.log("Raw API response:", data)
-
-      // Handle different response structures
-      let productsArray = []
-      if (Array.isArray(data)) {
-        // If response is directly an array
-        productsArray = data
-      } else if (data.products && Array.isArray(data.products)) {
-        // If response has products property
-        productsArray = data.products
-      } else if (data.data && Array.isArray(data.data)) {
-        // If response has data property
-        productsArray = data.data
-      } else {
-        console.warn("Unexpected response structure:", data)
-        productsArray = []
-      }
-
-      console.log("Processed products array:", productsArray)
-      console.log("Number of products:", productsArray.length)
-
-      setProducts(productsArray)
+      const productList = data.products || data || []
+      setProducts(productList)
+      setFilteredProducts(productList)
     } catch (err) {
-      console.error("Error fetching products:", err)
-      setError(err.message)
+      setError(`Failed to fetch products: ${err.message}`)
+      console.error("API Error:", err)
+      // Fallback to mock data for demo purposes
+      const mockProducts = generateMockProducts()
+      setProducts(mockProducts)
+      setFilteredProducts(mockProducts)
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    fetchProducts()
-  }, [])
+  const updateProductStatus = async (productId, status) => {
+    try {
+      const response = await fetch(`${ENV.API_BASE_URL}/api/products/${productId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          isApproved: status === "Approved",
+        }),
+      })
 
-  return { products, loading, error, refetch: fetchProducts }
-}
+      if (!response.ok) {
+        throw new Error(`Failed to update product status: ${response.status}`)
+      }
 
-// Toast notification component
-const Toast = ({ message, type, show, onClose }) => {
-  useEffect(() => {
-    if (show) {
-      const timer = setTimeout(onClose, 3000)
-      return () => clearTimeout(timer)
+      return await response.json()
+    } catch (err) {
+      console.error("Update Error:", err)
+      throw err
     }
-  }, [show, onClose])
+  }
 
-  if (!show) return null
+  const deleteProduct = async (productId) => {
+    try {
+      const response = await fetch(`${ENV.API_BASE_URL}/api/products/${productId}`, {
+        method: "DELETE",
+      })
 
-  return (
-    <div
-      className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-        type === "success" ? "bg-green-500" : type === "error" ? "bg-red-500" : "bg-blue-500"
-      } text-white`}
-    >
-      {message}
-    </div>
-  )
-}
+      if (!response.ok) {
+        throw new Error(`Failed to delete product: ${response.status}`)
+      }
 
-// Loading skeleton component
-const Skeleton = ({ className = "", count = 1 }) => {
-  return (
-    <>
-      {[...Array(count)].map((_, i) => (
-        <div key={i} className={`animate-pulse bg-gray-200 rounded ${className}`}></div>
-      ))}
-    </>
-  )
-}
+      return true
+    } catch (err) {
+      console.error("Delete Error:", err)
+      throw err
+    }
+  }
 
-// Analytics Dashboard Component - FIXED VERSION
-const AnalyticsDashboard = ({ products }) => {
-  console.log("Analytics Dashboard - products received:", products)
+  const bulkUpdateProducts = async (productIds, status) => {
+    try {
+      const updatePromises = productIds.map((id) => updateProductStatus(id, status))
+      await Promise.all(updatePromises)
+      return true
+    } catch (err) {
+      console.error("Bulk Update Error:", err)
+      throw err
+    }
+  }
 
-  const approvedCount = products.filter((p) => p.isApproved === true).length
-  const unapprovedCount = products.length - approvedCount
+  const generateMockProducts = () => {
+    const categories = ["DeFi", "NFT", "Gaming", "Tools", "Infrastructure", "Social", "Education"]
+    const statuses = ["Live", "Beta", "Development", "Deprecated"]
+    const approvalStatuses = ["Approved", "Unapproved"]
 
-  const categoryData = products.reduce((acc, product) => {
-    const category = product.category || "Unknown"
-    acc[category] = (acc[category] || 0) + 1
-    return acc
-  }, {})
+    return Array.from({ length: 50 }, (_, i) => ({
+      id: `prod-${i + 1}`,
+      name: `Chatter`,
+      description: `This is a description for product ${i + 1}`,
+      alias: `prod${i + 1}`,
+      category: [categories[i % categories.length]],
+      verified: Math.random() > 0.5,
+      openSource: Math.random() > 0.5,
+      isApproved: Math.random() > 0.3,
+      status: statuses[i % statuses.length],
+      approvalStatus: approvalStatuses[i % approvalStatuses.length],
+      teamMembers: [`info@usechatter.app`],
+      website: `https://product${i + 1}.com`,
+      userCount: Math.floor(Math.random() * 10000).toString(),
+      launchDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date().toISOString(),
+      founder: "@starlingvibe",
+    }))
+  }
 
-  const pieData = [
-    { name: "Approved", value: approvedCount, color: "#10B981" },
-    { name: "Unapproved", value: unapprovedCount, color: "#EF4444" },
-  ]
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchProducts()
+    }
+  }, [isAuthenticated])
 
-  const categoryChartData = Object.entries(categoryData).map(([category, count]) => ({
-    category,
-    count,
-  }))
+  useEffect(() => {
+    let filtered = products
 
-  const statusData = products.reduce((acc, product) => {
-    const status = product.status || "Unknown"
-    acc[status] = (acc[status] || 0) + 1
-    return acc
-  }, {})
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.category.some((cat) => cat.toLowerCase().includes(searchTerm.toLowerCase())),
+      )
+    }
 
-  const statusChartData = Object.entries(statusData).map(([status, count]) => ({
-    status,
-    count,
-  }))
+    if (filterStatus !== "All") {
+      filtered = filtered.filter((product) => {
+        if (filterStatus === "Approved") return product.isApproved
+        if (filterStatus === "Unapproved") return !product.isApproved
+        return true
+      })
+    }
 
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Products</p>
-              <p className="text-2xl font-bold text-gray-900">{products.length}</p>
-            </div>
-            <Package className="w-8 h-8 text-blue-500" />
+    setFilteredProducts(filtered)
+  }, [searchTerm, filterStatus, products])
+
+  // Header Component
+  const Header = () => (
+    <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <a href="/" className="flex-shrink-0">
+            <img src={logo} alt="logo" className="h-8 w-auto dark:hidden" />
+            <img
+              src={whiteLogo}
+              alt="logo"
+              className="h-8 w-auto hidden dark:block"
+            />
+          </a>
+          <div className="flex items-center bg-neutral-200 dark:bg-[#20232D] px-4 py-2.5 rounded-[17px]">
+            <ul className="flex space-x-6">
+              <a href='/'>
+              <li className="text-black dark:text-white hover:text-green-darker dark:hover:text-green-darker font-semibold cursor-pointer text-sm whitespace-nowrap">
+                Home
+              </li>
+              </a>
+              <a href='/'>
+              <li className="text-black dark:text-white font-semibold hover:text-green-darker dark:hover:text-green-darker cursor-pointer text-sm whitespace-nowrap">
+                About
+              </li>
+              </a>
+              <a href='/'>
+              <li className="text-black dark:text-white font-semibold hover:text-green-darker dark:hover:text-green-darker cursor-pointer text-sm whitespace-nowrap">
+                Contact Us
+              </li>
+              </a>
+            </ul>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Approved</p>
-              <p className="text-2xl font-bold text-green-600">{approvedCount}</p>
-            </div>
-            <Check className="w-8 h-8 text-green-500" />
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-red-600">{unapprovedCount}</p>
-            </div>
-            <X className="w-8 h-8 text-red-500" />
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Categories</p>
-              <p className="text-2xl font-bold text-purple-600">{Object.keys(categoryData).length}</p>
-            </div>
-            <BarChart3 className="w-8 h-8 text-purple-500" />
+        <div className="flex items-center space-x-4">
+          <a
+            href="/create-product"
+            className="flex items-center space-x-2 bg-[#02834e] text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Product</span>
+          </a>
+          <div className="flex items-center space-x-3">
+            {/* <span className="text-sm text-gray-600">Welcome</span> */}
+            <AdminSwitcher />
           </div>
         </div>
       </div>
+    </header>
+  )
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">Approval Status</h3>
+  // Navigation Tabs
+  const NavigationTabs = () => (
+    <nav className="bg-white border-b border-gray-200 px-6">
+      <div className="flex space-x-8">
+        {["Dashboard", "Product Submissions", "Edit Requests", "JSON Exports", "Team Settings"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === tab
+                ? "border-green-500 text-green-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    </nav>
+  )
+
+  // Enhanced Data Table Component with Bulk Actions and Export
+  const ProductTable = ({ title, data, showSearch = true }) => {
+    const handleSelectAll = () => {
+      if (selectAll) {
+        setSelectedProducts([])
+      } else {
+        setSelectedProducts(data.map((p) => p.id))
+      }
+      setSelectAll(!selectAll)
+    }
+
+    const handleSelectProduct = (productId) => {
+      if (selectedProducts.includes(productId)) {
+        setSelectedProducts(selectedProducts.filter((id) => id !== productId))
+      } else {
+        setSelectedProducts([...selectedProducts, productId])
+      }
+    }
+
+    useEffect(() => {
+      setShowBulkActions(selectedProducts.length > 0)
+    }, [selectedProducts])
+
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <div className="flex items-center space-x-3">
+              {showSearch && (
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-64"
+                  />
+                </div>
+              )}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Filter className="w-4 h-4 text-gray-500" />
+              </button>
+
+              {/* Export Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={exportAllProducts}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Export</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bulk Actions Bar */}
+          {showBulkActions && (
+            <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-blue-900">
+                  {selectedProducts.length} product{selectedProducts.length !== 1 ? "s" : ""} selected
+                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleBulkApprove}
+                    disabled={bulkActionLoading}
+                    className="px-3 py-1 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-sm rounded-lg transition-colors"
+                  >
+                    {bulkActionLoading ? "Processing..." : "Approve"}
+                  </button>
+                  <button
+                    onClick={handleBulkReject}
+                    disabled={bulkActionLoading}
+                    className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 text-white text-sm rounded-lg transition-colors"
+                  >
+                    {bulkActionLoading ? "Processing..." : "Reject"}
+                  </button>
+                  <button
+                    onClick={handleBulkDelete}
+                    disabled={bulkActionLoading}
+                    className="px-3 py-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-sm rounded-lg transition-colors"
+                  >
+                    {bulkActionLoading ? "Processing..." : "Delete"}
+                  </button>
+                  <button
+                    onClick={exportSelectedProducts}
+                    disabled={bulkActionLoading}
+                    className="px-3 py-1 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white text-sm rounded-lg transition-colors flex items-center space-x-1"
+                  >
+                    <Download className="w-3 h-3" />
+                    <span>Export Selected</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showFilters && (
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="selectAll"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                  className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                />
+                <label htmlFor="selectAll" className="text-sm font-medium text-gray-700">
+                  Select All
+                </label>
+              </div>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="All">All Status</option>
+                <option value="Approved">Approved</option>
+                <option value="Unapproved">Unapproved</option>
+              </select>
+            </div>
+          )}
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">All</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Product Name
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Founder
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Last Access
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {data.slice(0, 10).map((product, index) => (
+                <tr key={product.id || index} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(product.id)}
+                      onChange={() => handleSelectProduct(product.id)}
+                      className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-900">{product.name}</span>
+                      <span className="text-gray-400">🔗</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-900">{product.teamMembers?.[0] || "N/A"}</span>
+                      <span className="text-gray-400">🔗</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm text-gray-900">{product.founder || "N/A"}</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
+                        product.isApproved
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {product.isApproved ? "Approved" : "Unapproved"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5 minutes ago</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() => {
+                        setSelectedProduct(product)
+                        setShowActionModal(true)
+                      }}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <MoreHorizontal className="w-5 h-5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )
+  }
+
+  // Dashboard Stats Cards
+  const StatsCards = () => {
+    const totalProducts = products.length
+    const approvedProducts = products.filter((p) => p.isApproved).length
+    const unApprovedProducts = products.filter((p) => !p.isApproved).length
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Total Products</p>
+              <p className="text-3xl font-bold text-blue-600">{totalProducts}</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <FileText className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Approved</p>
+              <p className="text-3xl font-bold text-green-600">{approvedProducts}</p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Unapproved</p>
+              <p className="text-3xl font-bold text-red-600">{unApprovedProducts}</p>
+            </div>
+            <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+              <Clock className="w-6 h-6 text-red-600" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+    )
+  }
+
+  // Charts Component
+  const ChartsSection = () => {
+    const getChartData = () => {
+      const categoryData = products.reduce((acc, product) => {
+        product.category.forEach((cat) => {
+          acc[cat] = (acc[cat] || 0) + 1
+        })
+        return acc
+      }, {})
+
+      const statusData = products.reduce((acc, product) => {
+        const status = product.isApproved ? "Approved" : "Unapproved"
+        acc[status] = (acc[status] || 0) + 1
+        return acc
+      }, {})
+
+      return {
+        categories: Object.entries(categoryData).map(([name, value]) => ({ name, value })),
+        statuses: Object.entries(statusData).map(([name, value]) => ({ name, value })),
+      }
+    }
+
+    const chartData = getChartData()
+    const COLORS = ["#10B981", "#3B82F6", "#8B5CF6", "#F59E0B", "#EF4444", "#06B6D4", "#84CC16"]
+
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Products by Category</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData.categories}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="#10B981" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Approval Status</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={pieData}
+                data={chartData.statuses}
                 cx="50%"
                 cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 outerRadius={80}
+                fill="#8884d8"
                 dataKey="value"
-                label={({ name, value }) => `${name}: ${value}`}
               >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                {chartData.statuses.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
         </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">Products by Category</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={categoryChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="category" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count" fill="#3B82F6" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {statusChartData.length > 0 && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">Products by Status</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={statusChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="status" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count" fill="#10B981" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Products Management Component - FIXED VERSION
-const ProductsManagement = ({ products, onRefetch }) => {
-  const [activeTab, setActiveTab] = useState("approved")
-  const [editingProduct, setEditingProduct] = useState(null)
-  const [toast, setToast] = useState({ show: false, message: "", type: "" })
-
-  const showToast = (message, type) => {
-    setToast({ show: true, message, type })
-  }
-
-  const approvedProducts = products.filter((p) => p.isApproved === true)
-  const unapprovedProducts = products.filter((p) => p.isApproved !== true)
-
-  const approveProduct = async (productId) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ isApproved: true }),
-      })
-      if (response.ok) {
-        showToast("Product approved successfully!", "success")
-        onRefetch()
-      } else {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-    } catch (error) {
-      console.error("Error approving product:", error)
-      showToast("Failed to approve product", "error")
-    }
-  }
-
-  const deleteProduct = async (productId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
-          method: "DELETE",
-          headers: {
-            Accept: "application/json",
-          },
-        })
-        if (response.ok) {
-          showToast("Product deleted successfully!", "success")
-          onRefetch()
-        } else {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-      } catch (error) {
-        console.error("Error deleting product:", error)
-        showToast("Failed to delete product", "error")
-      }
-    }
-  }
-
-  const ProductCard = ({ product, showApprove = false }) => (
-    <div className="bg-white rounded-xl border shadow-sm p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-start space-x-4">
-          {product.icon && (
-            <img
-              src={product.icon || "/placeholder.svg"}
-              alt={product.name || "Product"}
-              className="w-12 h-12 rounded-lg object-cover"
-            />
-          )}
-          <div>
-            <h3 className="font-semibold text-lg text-gray-900">{product.name || "Unnamed Product"}</h3>
-            <p className="text-sm text-gray-600">{product.alias || ""}</p>
-            <div className="flex items-center space-x-2 mt-2">
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  product.category === "DeFi"
-                    ? "bg-green-100 text-green-800"
-                    : product.category === "Gaming"
-                      ? "bg-red-100 text-red-800"
-                      : product.category === "Tools"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {product.category || "Unknown"}
-              </span>
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  product.status === "Live"
-                    ? "bg-green-100 text-green-800"
-                    : product.status === "Beta"
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {product.status || "Unknown"}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          {showApprove && (
-            <button
-              onClick={() => approveProduct(product.id)}
-              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-              title="Approve"
-            >
-              <Check className="w-4 h-4" />
-            </button>
-          )}
-          <button
-            onClick={() => setEditingProduct(product)}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="Edit"
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => deleteProduct(product.id)}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            title="Delete"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-      <p className="text-gray-600 text-sm">{product.description || "No description available"}</p>
-      {product.founder && <p className="text-xs text-gray-500 mt-2">Founded by: {product.founder}</p>}
-    </div>
-  )
-
-  return (
-    <div className="space-y-6">
-      <div className="flex border-b">
-        <button
-          className={`px-4 py-2 font-medium ${
-            activeTab === "approved"
-              ? "border-b-2 border-green-500 text-green-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-          onClick={() => setActiveTab("approved")}
-        >
-          Approved ({approvedProducts.length})
-        </button>
-        <button
-          className={`px-4 py-2 font-medium ${
-            activeTab === "unapproved" ? "border-b-2 border-red-500 text-red-600" : "text-gray-500 hover:text-gray-700"
-          }`}
-          onClick={() => setActiveTab("unapproved")}
-        >
-          Unapproved ({unapprovedProducts.length})
-        </button>
-      </div>
-
-      {products.length === 0 ? (
-        <div className="text-center py-12">
-          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-          <p className="text-gray-500">There are no products to display at the moment.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {activeTab === "approved"
-            ? approvedProducts.map((product) => <ProductCard key={product.id} product={product} />)
-            : unapprovedProducts.map((product) => <ProductCard key={product.id} product={product} showApprove />)}
-        </div>
-      )}
-
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        show={toast.show}
-        onClose={() => setToast({ show: false, message: "", type: "" })}
-      />
-    </div>
-  )
-}
-
-// Multi-step Create Product Form - FIXED VERSION
-const CreateProductForm = ({ onRefetch }) => {
-  const [currentStep, setCurrentStep] = useState(0)
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    alias: "",
-    category: "DeFi",
-    verified: false,
-    openSource: false,
-    isApproved: true,
-    icon: "",
-    gallery: [],
-    website: "",
-    repositoryLink: "",
-    founder: "",
-    ceo: "",
-    features: [],
-    techStack: [],
-    launchDate: "",
-    userCount: "",
-    status: "Live",
-    xAccount: "",
-    explainerVideo: "",
-  })
-  const [toast, setToast] = useState({ show: false, message: "", type: "" })
-
-  const showToast = (message, type) => {
-    setToast({ show: true, message, type })
-  }
-
-  const steps = [
-    { title: "Basic Information", icon: "1" },
-    { title: "Details & Status", icon: "2" },
-    { title: "Team Members", icon: "3" },
-    { title: "Technical Info", icon: "4" },
-    { title: "Links & Contact", icon: "5" },
-    { title: "Media & Assets", icon: "6" },
-  ]
-
-  const updateFormData = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
-
-  const addToArray = (field, value) => {
-    if (value.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: [...prev[field], value.trim()],
-      }))
-    }
-  }
-
-  const removeFromArray = (field, index) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index),
-    }))
-  }
-
-  const submitForm = async () => {
-    try {
-      console.log("Submitting form data:", formData)
-
-      const response = await fetch(`${API_BASE_URL}/products`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      console.log("Create response status:", response.status)
-
-      if (response.ok) {
-        showToast("Product created successfully!", "success")
-        onRefetch()
-        setFormData({
-          name: "",
-          description: "",
-          alias: "",
-          category: "DeFi",
-          verified: false,
-          openSource: false,
-          isApproved: true,
-          icon: "",
-          gallery: [],
-          website: "",
-          repositoryLink: "",
-          founder: "",
-          ceo: "",
-          features: [],
-          techStack: [],
-          launchDate: "",
-          userCount: "",
-          status: "Live",
-          xAccount: "",
-          explainerVideo: "",
-        })
-        setCurrentStep(0)
-      } else {
-        const errorData = await response.text()
-        console.error("Create error response:", errorData)
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-    } catch (error) {
-      console.error("Error creating product:", error)
-      showToast("Failed to create product", "error")
-    }
-  }
-
-  const ArrayInput = ({ field, placeholder, value }) => {
-    const [inputValue, setInputValue] = useState("")
-
-    return (
-      <div className="space-y-2">
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={placeholder}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault()
-                addToArray(field, inputValue)
-                setInputValue("")
-              }
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              addToArray(field, inputValue)
-              setInputValue("")
-            }}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            Add
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {value.map((item, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm flex items-center space-x-2"
-            >
-              <span>{item}</span>
-              <button
-                type="button"
-                onClick={() => removeFromArray(field, index)}
-                className="text-red-500 hover:text-red-700"
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
       </div>
     )
   }
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 0:
+  // Main Content Renderer
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+        </div>
+      )
+    }
+
+    if (error) {
+      return (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => fetchProducts()}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      )
+    }
+
+    switch (activeTab) {
+      case "Dashboard":
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => updateFormData("name", e.target.value)}
-                placeholder="e.g. Chatter"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
+          <div>
+            <div className="mb-6">
+              <h1 className="text-2xl text-center font-bold text-gray-900">
+                Welcome <span className="text-green-600">{currentUser}</span>
+              </h1>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => updateFormData("description", e.target.value)}
-                placeholder="Provide a detailed description of your product, its purpose, and what problems it solves..."
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Alias/Short Name *</label>
-              <input
-                type="text"
-                value={formData.alias}
-                onChange={(e) => updateFormData("alias", e.target.value)}
-                placeholder="e.g. chatter-app (used for URL slugs)"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-              <select
-                value={formData.category}
-                onChange={(e) => updateFormData("category", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="DeFi">DeFi</option>
-                <option value="NFT">NFT</option>
-                <option value="Gaming">Gaming</option>
-                <option value="Tools">Tools</option>
-                <option value="Infrastructure">Infrastructure</option>
-                <option value="Social">Social</option>
-                <option value="Education">Education</option>
-              </select>
-            </div>
+            <StatsCards />
+            <ChartsSection />
+            <ProductTable title="Recent Products" data={filteredProducts} />
           </div>
         )
-      case 1:
+      case "Product Submissions":
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <select
-                value={formData.status}
-                onChange={(e) => updateFormData("status", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="Live">Live</option>
-                <option value="Beta">Beta</option>
-                <option value="Development">Development</option>
-                <option value="Deprecated">Deprecated</option>
-              </select>
+          <div>
+            <div className="mb-6">
+              <h1 className="text-2xl text-center font-bold text-gray-900">
+                <span className="text-green-600">{currentUser}</span>, check if you've got pending task!
+              </h1>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Launch Date</label>
-              <input
-                type="date"
-                value={formData.launchDate}
-                onChange={(e) => updateFormData("launchDate", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">User Count</label>
-              <input
-                type="text"
-                value={formData.userCount}
-                onChange={(e) => updateFormData("userCount", e.target.value)}
-                placeholder="e.g. 10000+"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div className="space-y-3">
-              <label className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  checked={formData.verified}
-                  onChange={(e) => updateFormData("verified", e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">Verified Product</span>
-              </label>
-              <label className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  checked={formData.openSource}
-                  onChange={(e) => updateFormData("openSource", e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">Open Source</span>
-              </label>
-            </div>
+            <ProductTable title="Product Submissions" data={filteredProducts} />
           </div>
         )
-      case 2:
+      case "Edit Requests":
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Founder</label>
-              <input
-                type="text"
-                value={formData.founder}
-                onChange={(e) => updateFormData("founder", e.target.value)}
-                placeholder="Founder's name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+          <div>
+            <div className="mb-6">
+              <h1 className="text-2xl text-center font-bold text-gray-900">Edit Requests</h1>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">CEO</label>
-              <input
-                type="text"
-                value={formData.ceo}
-                onChange={(e) => updateFormData("ceo", e.target.value)}
-                placeholder="CEO's name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+            <ProductTable title="Edit Requests" data={filteredProducts} />
           </div>
         )
-      case 3:
+      case "JSON Exports":
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tech Stack</label>
-              <ArrayInput
-                field="techStack"
-                placeholder="Add technology (e.g. React, Node.js)"
-                value={formData.techStack}
-              />
+          <div>
+            <div className="mb-6">
+              <h1 className="text-2xl text-center font-bold text-gray-900">JSON Exports</h1>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Features</label>
-              <ArrayInput field="features" placeholder="Add feature" value={formData.features} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Repository Link</label>
-              <input
-                type="url"
-                value={formData.repositoryLink}
-                onChange={(e) => updateFormData("repositoryLink", e.target.value)}
-                placeholder="https://github.com/username/repo"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+            <ProductTable title="JSON Export Requests" data={filteredProducts} />
           </div>
         )
-      case 4:
+      case "Team Settings":
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
-              <input
-                type="url"
-                value={formData.website}
-                onChange={(e) => updateFormData("website", e.target.value)}
-                placeholder="https://yourproduct.com"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+          <div>
+            <div className="mb-6">
+              <h1 className="text-2xl text-center font-bold text-gray-900">Team Settings</h1>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">X (Twitter) Account</label>
-              <input
-                type="text"
-                value={formData.xAccount}
-                onChange={(e) => updateFormData("xAccount", e.target.value)}
-                placeholder="@yourproduct"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-        )
-      case 5:
-        return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product Icon URL</label>
-              <input
-                type="url"
-                value={formData.icon}
-                onChange={(e) => updateFormData("icon", e.target.value)}
-                placeholder="https://example.com/icon.png"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Explainer Video</label>
-              <input
-                type="url"
-                value={formData.explainerVideo}
-                onChange={(e) => updateFormData("explainerVideo", e.target.value)}
-                placeholder="https://youtube.com/watch?v=..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Gallery Images</label>
-              <ArrayInput field="gallery" placeholder="Add image URL" value={formData.gallery} />
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Team Members</h3>
+              <div className="space-y-4">
+                {Object.entries(ENV.ADMIN_PASSWORDS).map(([pin, username]) => (
+                  <div key={pin} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                        <span className="text-white font-medium">{username[0]}</span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{username}</p>
+                        <p className="text-sm text-gray-500">PIN: {pin}</p>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 text-gray-400 hover:text-red-600 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )
       default:
-        return null
+        return <div>Tab content not found</div>
     }
   }
 
-  return (
-    <div className="max-w-4xl mx-auto">
-      {/* Progress Steps */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          {steps.map((step, index) => (
-            <div key={index} className="flex flex-col items-center">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                  index <= currentStep ? "bg-green-500 text-white" : "bg-gray-200 text-gray-600"
-                }`}
-              >
-                {index < currentStep ? <Check className="w-5 h-5" /> : step.icon}
-              </div>
-              <span className="mt-2 text-xs text-gray-600 text-center">{step.title}</span>
-            </div>
-          ))}
+  // Footer Component
+  const Footer = () => (
+    <footer className="bg-white border-t border-gray-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <span className="font-bold text-xl">superteam</span>
+          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
         </div>
-        <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-green-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-          ></div>
+        <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
+          <div className="flex space-x-4">
+            <button className="text-gray-700 hover:text-green-600 font-medium transition-colors">GitHub Repo</button>
+            <button className="text-gray-700 hover:text-green-600 font-medium transition-colors">Contact Us</button>
+          </div>
         </div>
       </div>
-
-      {/* Form Content */}
-      <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">{steps[currentStep].title}</h2>
-        {renderStepContent()}
-      </div>
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between">
-        <button
-          type="button"
-          onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
-          disabled={currentStep === 0}
-          className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span>Previous</span>
-        </button>
-
-        {currentStep < steps.length - 1 ? (
-          <button
-            type="button"
-            onClick={() => {
-              if (currentStep === 0 && (!formData.name || !formData.description || !formData.alias)) {
-                showToast("Please fill in all required fields", "error")
-                return
-              }
-              setCurrentStep(Math.min(steps.length - 1, currentStep + 1))
-            }}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-2"
-          >
-            <span>Next</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={submitForm}
-            className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center space-x-2"
-          >
-            <Check className="w-4 h-4" />
-            <span>Create Product</span>
-          </button>
-        )}
-      </div>
-
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        show={toast.show}
-        onClose={() => setToast({ show: false, message: "", type: "" })}
-      />
-    </div>
+    </footer>
   )
-}
 
-// Edit Product Modal - FIXED VERSION
-const EditProductModal = ({ product, isOpen, onClose, onUpdate }) => {
-  const [formData, setFormData] = useState({})
-  const [toast, setToast] = useState({ show: false, message: "", type: "" })
-
-  useEffect(() => {
-    if (product) {
-      setFormData({ ...product })
-    }
-  }, [product])
-
-  const showToast = (message, type) => {
-    setToast({ show: true, message, type })
-  }
-
-  const handleUpdate = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/products/${product.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (response.ok) {
-        showToast("Product updated successfully!", "success")
-        onUpdate()
-        setTimeout(onClose, 1500)
-      } else {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-    } catch (error) {
-      console.error("Error updating product:", error)
-      showToast("Failed to update product", "error")
-    }
-  }
-
-  if (!isOpen) return null
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Edit Product</h2>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-            <input
-              type="text"
-              value={formData.name || ""}
-              onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea
-              value={formData.description || ""}
-              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <select
-                value={formData.category || ""}
-                onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="DeFi">DeFi</option>
-                <option value="NFT">NFT</option>
-                <option value="Gaming">Gaming</option>
-                <option value="Tools">Tools</option>
-                <option value="Infrastructure">Infrastructure</option>
-                <option value="Social">Social</option>
-                <option value="Education">Education</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <select
-                value={formData.status || ""}
-                onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="Live">Live</option>
-                <option value="Beta">Beta</option>
-                <option value="Development">Development</option>
-                <option value="Deprecated">Deprecated</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
-              <input
-                type="url"
-                value={formData.website || ""}
-                onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Founder</label>
-              <input
-                type="text"
-                value={formData.founder || ""}
-                onChange={(e) => setFormData((prev) => ({ ...prev, founder: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={formData.verified || false}
-                onChange={(e) => setFormData((prev) => ({ ...prev, verified: e.target.checked }))}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm">Verified</span>
-            </label>
-
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={formData.openSource || false}
-                onChange={(e) => setFormData((prev) => ({ ...prev, openSource: e.target.checked }))}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm">Open Source</span>
-            </label>
-          </div>
-        </div>
-
-        <div className="p-6 border-t flex justify-end space-x-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button onClick={handleUpdate} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-            Update Product
-          </button>
-        </div>
-
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          show={toast.show}
-          onClose={() => setToast({ show: false, message: "", type: "" })}
-        />
-      </div>
-    </div>
-  )
-}
-
-// Main Admin Dashboard Component - FIXED VERSION
-const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState("analytics")
-  const [editingProduct, setEditingProduct] = useState(null)
-  const { products, loading, error, refetch } = useProducts()
-
-  const tabs = [
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
-    { id: "products", label: "Products", icon: Package },
-    { id: "create", label: "Create Product", icon: Plus },
-  ]
-
-  // Debug logging
-  useEffect(() => {
-    console.log("AdminPage - Current state:", { products, loading, error })
-  }, [products, loading, error])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                  <Package className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">SuperteamNG Products</h1>
-                  <p className="text-sm text-gray-600">Admin Dashboard</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="space-y-6">
-            <Skeleton className="h-8 w-48" />
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Skeleton className="h-32" count={4} />
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Skeleton className="h-80" count={2} />
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 mb-4">
-            <X className="w-16 h-16 mx-auto" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Dashboard</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button onClick={refetch} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-            Try Again
-          </button>
-        </div>
-      </div>
-    )
+  // Main App Return
+  if (!isAuthenticated || switchingAdmin) {
+    return <PasscodeScreen isSwitch={switchingAdmin} />
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                <Package className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  SuperteamNG <span className="text-gray-900">Products</span>
-                </h1>
-                <p className="text-sm text-gray-600">Admin Dashboard</p>
-              </div>
-            </div>
+      <Header />
+      <NavigationTabs />
+      <main className="max-w-7xl mx-auto px-6 py-8">{renderContent()}</main>
+      <Footer />
 
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{products.length} Products</p>
-                <p className="text-xs text-gray-500">{products.filter((p) => p.isApproved).length} Approved</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation Tabs */}
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              {tabs.map((tab) => {
-                const Icon = tab.icon
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
-                      activeTab === tab.id
-                        ? "border-green-500 text-green-600"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{tab.label}</span>
-                  </button>
-                )
-              })}
-            </nav>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === "analytics" && <AnalyticsDashboard products={products} />}
-        {activeTab === "products" && <ProductsManagement products={products} onRefetch={refetch} />}
-        {activeTab === "create" && <CreateProductForm onRefetch={refetch} />}
-      </div>
-
-      {/* Edit Product Modal */}
-      <EditProductModal
-        product={editingProduct}
-        isOpen={!!editingProduct}
-        onClose={() => setEditingProduct(null)}
-        onUpdate={refetch}
-      />
+      {/* Action Modal */}
+      {showActionModal && selectedProduct && (
+        <ActionModal
+          product={selectedProduct}
+          onClose={() => {
+            setShowActionModal(false)
+            setSelectedProduct(null)
+          }}
+        />
+      )}
     </div>
   )
 }
 
-export default AdminPage
+export default AdminDashboard

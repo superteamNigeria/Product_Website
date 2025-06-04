@@ -3,9 +3,10 @@ import React from "react";
 interface Props {
   data: any;
   onUpdate: (data: any) => void;
+  errors?: Record<string, string>;
 }
 
-const Step3_Team: React.FC<Props> = ({ data, onUpdate }) => {
+const Step3_Team = ({ data, onUpdate, errors }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     onUpdate({ [name]: value });
@@ -42,6 +43,9 @@ const Step3_Team: React.FC<Props> = ({ data, onUpdate }) => {
           placeholder="e.g. John Doe"
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
+        {errors?.founder && (
+          <p className="text-red-500 text-sm mt-1">{errors.founder}</p>
+        )}
       </div>
 
       {/* CEO */}

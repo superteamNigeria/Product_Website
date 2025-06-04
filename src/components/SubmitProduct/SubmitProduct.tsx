@@ -12,7 +12,8 @@ import Step6_Media from "./Step6_Media"
 import ProgressIndicator from "./ProgressIndicator"
 
 const SubmitProduct = () => {
-  const [step, setStep] = useState(1)
+  const [errors, setErrors] = useState({});
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Basic Info
     name: "",
@@ -36,6 +37,7 @@ const SubmitProduct = () => {
     // Technical
     techStack: [""],
     repositoryLink: "",
+    brand_colors: [""],
 
     // Links & Contact
     website: "",
@@ -49,43 +51,113 @@ const SubmitProduct = () => {
 
     // Additional
     metadata: {},
-  })
-
-  const next = () => setStep((prev) => Math.min(prev + 1, 6))
-  const previous = () => setStep((prev) => Math.max(prev - 1, 1))
+  });
 
   const updateFormData = (stepData: any) => {
-    setFormData((prev) => ({ ...prev, ...stepData }))
-  }
+    setFormData((prev) => ({ ...prev, ...stepData }));
+    setErrors({});
+  };
+
+  const validateStep = () => {
+    const stepErrors: Record<string, string> = {};
+
+    switch (step) {
+      case 1:
+        ["name", "description", "alias", "category"].forEach((field) => {
+          if (!formData[field]?.trim()) {
+            stepErrors[field] = "This field is required.";
+          }
+        });
+        break;
+
+      case 2:
+        ["status", "launchDate", "userCount"].forEach((field) => {
+          if (!formData[field]?.trim()) {
+            stepErrors[field] = "This field is required.";
+          }
+        });
+        if (!formData.features?.some((f) => f.trim())) {
+          stepErrors.features = "At least one feature is required.";
+        }
+        break;
+
+      case 3:
+        if (!formData.founder?.trim()) {
+          stepErrors.founder = "Founder name is required.";
+        }
+        break;
+
+      case 4:
+        if (!formData.techStack?.some((t) => t.trim())) {
+          stepErrors.techStack = "At least one tech stack is required.";
+        }
+        if (!formData.brand_colors?.some((c) => c.trim())) {
+          stepErrors.brand_colors = "At least one brand color is required.";
+        }
+        break;
+
+      case 5:
+        if (!formData.website?.trim()) {
+          stepErrors.website = "Website is required.";
+        } else if (!/^https?:\/\/.+/.test(formData.website)) {
+          stepErrors.website = "Website must be a valid URL.";
+        }
+
+        if (!formData.xAccount?.trim()) {
+          stepErrors.xAccount = "X account is required.";
+        } else if (
+          !(formData.xAccount.startsWith("@") || /^https?:\/\/.+/.test(formData.xAccount))
+        ) {
+          stepErrors.xAccount = "Must start with @ or be a valid URL.";
+        }
+        break;
+
+      case 6:
+        if (!formData.explainerVideo?.trim()) {
+          stepErrors.explainerVideo = "Explainer video is required.";
+        } else if (!/^https?:\/\/.+/.test(formData.explainerVideo)) {
+          stepErrors.explainerVideo = "Explainer video must be a valid URL.";
+        }
+
+        if (!formData.gallery || formData.gallery.length === 0) {
+          stepErrors.gallery = "At least one image URL is required.";
+        } else {
+          const hasInvalidGalleryItem = formData.gallery.some(
+            (url: string) => !/^https?:\/\/.+/.test(url.trim())
+          );
+          if (hasInvalidGalleryItem) {
+            stepErrors.gallery = "One or more gallery items are invalid URLs.";
+          }
+        }
+        break;
+
+    }
+
+    setErrors(stepErrors);
+    return Object.keys(stepErrors).length === 0;
+  };
+
+  const next = () => {
+    if (validateStep()) {
+      setStep((prev) => Math.min(prev + 1, 6));
+    }
+  };
+
+  const previous = () => {
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
 
   const handleSubmit = async () => {
+    if (!validateStep()) return;
+
     try {
-      // Validate required fields
-      const requiredFields = {
-        name: formData.name,
-        description: formData.description,
-        alias: formData.alias,
-        category: formData.category,
-      }
-
-      const missingFields = Object.entries(requiredFields)
-        .filter(([_, value]) => !value || value.trim() === "")
-        .map(([key, _]) => key)
-
-      if (missingFields.length > 0) {
-        alert(`Please fill in the following required fields: ${missingFields.join(", ")}`)
-        return
-      }
-
-      // Show loading state
-      const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement
-      const originalText = submitButton?.textContent
+      const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+      const originalText = submitButton?.textContent;
       if (submitButton) {
-        submitButton.disabled = true
-        submitButton.textContent = "Submitting..."
+        submitButton.disabled = true;
+        submitButton.textContent = "Submitting...";
       }
 
-      // Transform form data to match API DTO structure
       const submitData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
@@ -107,48 +179,30 @@ const SubmitProduct = () => {
         ceo: formData.ceo?.trim() || "",
         features: formData.features?.filter((f: string) => f.trim() !== "") || [],
         techStack: formData.techStack?.filter((ts: string) => ts.trim() !== "") || [],
+        brand_colors: formData.brand_colors?.filter((c) => c.trim()) || [],
         launchDate: formData.launchDate || "",
         userCount: formData.userCount || "",
         status: formData.status || "",
         metadata: formData.metadata || {},
-      }
+      };
 
-      console.log("Submitting product data:", submitData)
-
-      // Make API call to submit product
       const response = await fetch("https://superteamng-products-backend.vercel.app/api/products", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitData),
-      })
+      });
 
       if (!response.ok) {
-        let errorMessage = "Failed to submit product. Please try again."
-
-        try {
-          const errorData = await response.json()
-          if (errorData.message) {
-            errorMessage = Array.isArray(errorData.message) ? errorData.message.join(", ") : errorData.message
-          }
-        } catch (e) {
-          // If we can't parse the error response, use the default message
-          console.error("Error parsing error response:", e)
-        }
-
-        throw new Error(errorMessage)
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message
+          ? Array.isArray(errorData.message)
+            ? errorData.message.join(", ")
+            : errorData.message
+          : "Failed to submit product.";
+        throw new Error(errorMessage);
       }
 
-      const result = await response.json()
-      console.log("Product submitted successfully:", result)
-
-      // Show success message
-      alert(
-        "🎉 Product submitted successfully! Your submission is now under review and will be published once approved.",
-      )
-
-      // Reset form or redirect
+      alert("🎉 Product submitted successfully! Your submission is now under review.");
       setFormData({
         name: "",
         description: "",
@@ -171,29 +225,26 @@ const SubmitProduct = () => {
         explainerVideo: "",
         playstore: [false, ""],
         appstore: [false, ""],
+        brand_colors: [""],
         metadata: {},
-      })
-
-      // Reset to first step
-      setStep(1)
-    } catch (error) {
+      });
+      setStep(1);
+    } catch (error: any) {
       console.error("Error submitting product:", error)
 
       let userMessage = "An error occurred while submitting your product. Please try again."
       if (error instanceof Error) {
         userMessage = error.message
       }
-
-      alert(`❌ Submission failed: ${userMessage}`)
+      alert(`❌ Submission failed: ${error.message}`);
     } finally {
-      // Restore button state
-      const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement
+      const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
       if (submitButton) {
-        submitButton.disabled = false
-        submitButton.textContent = "Submit →"
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit →";
       }
     }
-  }
+  };
 
   return (
     <div className="flex-1 lg:px-[80px] lg:py-[48px] dark:bg-[#0A0D14]">
@@ -209,12 +260,12 @@ const SubmitProduct = () => {
         <ProgressIndicator step={step} />
 
         <div className="mt-8">
-          {step === 1 && <Step1_BasicInfo data={formData} onUpdate={updateFormData} />}
-          {step === 2 && <Step2_Details data={formData} onUpdate={updateFormData} />}
-          {step === 3 && <Step3_Team data={formData} onUpdate={updateFormData} />}
-          {step === 4 && <Step4_Technical data={formData} onUpdate={updateFormData} />}
-          {step === 5 && <Step5_Links data={formData} onUpdate={updateFormData} />}
-          {step === 6 && <Step6_Media data={formData} onUpdate={updateFormData} />}
+          {step === 1 && <Step1_BasicInfo data={formData} onUpdate={updateFormData} errors={errors} />}
+          {step === 2 && <Step2_Details data={formData} onUpdate={updateFormData} errors={errors} />}
+          {step === 3 && <Step3_Team data={formData} onUpdate={updateFormData} errors={errors} />}
+          {step === 4 && <Step4_Technical data={formData} onUpdate={updateFormData} errors={errors} />}
+          {step === 5 && <Step5_Links data={formData} onUpdate={updateFormData} errors={errors} />}
+          {step === 6 && <Step6_Media data={formData} onUpdate={updateFormData} errors={errors} />}
         </div>
 
         <div className="flex justify-between mt-12">
@@ -232,6 +283,7 @@ const SubmitProduct = () => {
             </button>
           ) : (
             <button
+              type="submit"
               onClick={handleSubmit}
               className="bg-[#02834E] text-white px-6 py-2 rounded-full text-sm transition-colors duration-300 hover:bg-[#6CB798] hover:text-black"
             >
@@ -242,7 +294,7 @@ const SubmitProduct = () => {
       </div>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default SubmitProduct
+export default SubmitProduct;

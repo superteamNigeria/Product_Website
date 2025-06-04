@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import SubmitPage from "./pages/SubmitPage";
 import AdminPage from "./pages/admin/AdminPage";
+import CreateProduct from "./pages/admin/create/CreateProductPage";
 import ProductPage from "./components/ProductPage";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
       <Route path="/submit" element={<SubmitPage />} />
       <Route path="/product/:id" element={<ProductPage />} />
       <Route path="/admin" element={<AdminPage />} />
+      <Route path="/create-product" element={<CreateProduct />} />
       <Route path="/product/:id" element={<ProductPage />} />
     </Routes>
   );
