@@ -17,14 +17,14 @@ const Button: React.FC<ButtonProps> = ({ title, href, colors = [] }) => {
     } else if (colors.length === 1) {
       return colors[0];
     }
-    return '';
+    return "";
   };
 
   const getSingleBackground = () => {
-    if(colors.length === 1){
-      return `bg-${colors[0]}`
+    if (colors.length === 1) {
+      return `bg-${colors[0]}`;
     }
-  }
+  };
 
   return (
     <Link to={`product/${href}`}>
@@ -52,15 +52,15 @@ const Button: React.FC<ButtonProps> = ({ title, href, colors = [] }) => {
 // Badge component for categories
 const Badge = ({ children, variant }) => {
   const variants = {
-    Live: "bg-[#E6F3ED] font-regular dark:bg-[#20232D] dark:text-white/70 text-black text-center",
+    Live: "bg-[#A8E6CF] font-regular dark:bg-[#20232D] dark:text-white/70 text-black text-center",
     DeFi: "bg-[#10B981] font-regular text-white text-center",
     DePIN: "bg-[#06B6D4] font-regular text-white text-center",
-    PayFi: "bg-[#22C55E] font-regular text-white text-center",
-    RWAs: "bg-[#374151] font-regular text-white text-center",
-    InfoFi: "bg-[#0EA5E9] font-regular text-white text-center",
-    Stablecoins: "bg-[#F59E0B] font-regular text-white text-center",
-    Gaming: "bg-[#EA580C] font-regular text-white text-center",
-    AI: "bg-[#DC2626] font-regular text-white text-center",
+    PayFi: "bg-[#F59E0B] font-regular text-white text-center",
+    RWAs: "bg-[#DC2626] font-regular text-white text-center",
+    InfoFi: "bg-[#7C3AED] font-regular text-white text-center",
+    Stablecoins: "bg-[#374151] font-regular text-white text-center",
+    Gaming: "bg-[#0EA5E9] font-regular text-white text-center",
+    AI: "bg-[#9CA3AF] font-regular text-white text-center",
     Other: "bg-[#9CA3AF] font-regular text-white text-center",
   };
 
@@ -103,25 +103,22 @@ const ProductCard = ({
   x,
   website,
   users,
-  colors
+  colors,
 }: ProductCardProps) => {
-    const avatars = [avatar1, avatar2, avatar3]
+  const avatars = [avatar1, avatar2, avatar3];
   return (
     <div className="rounded-2xl p-4 max-w-md mx-auto">
       {/* Header section */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h2 className="font-bold text-3xl text-[#1E1E1E] dark:text-white mb-3 leading-8">{name}</h2>
+          <h2 className="font-bold text-3xl text-[#1E1E1E] dark:text-white mb-3 leading-8">
+            {name}
+          </h2>
 
           {/* Category badges */}
           <div className="flex gap-2 mb-4 text-center">
             {categories?.map((category, index) => (
-              <Badge
-                key={index}
-                variant={
-                  category
-                }
-              >
+              <Badge key={index} variant={category}>
                 {category}
               </Badge>
             ))}
@@ -136,7 +133,7 @@ const ProductCard = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Twitter size={20}  />
+            <Twitter size={20} />
           </a>
           <a
             href={website}
@@ -144,7 +141,7 @@ const ProductCard = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Globe size={20}  />
+            <Globe size={20} />
           </a>
         </div>
       </div>
@@ -156,7 +153,7 @@ const ProductCard = ({
 
       {/* Bottom section */}
       <div className="p-1 flex justify-between items-center pt-2 gap-2">
-        <Button title="Read More" href={href} colors={colors}  />
+        <Button title="Read More" href={`/product/${href}`} colors={colors} />
 
         {/* Avatar stack */}
         {avatars && avatars.length > 0 && (
@@ -166,18 +163,28 @@ const ProductCard = ({
                 key={index}
                 src={avatar}
                 alt={`Team member ${index + 1}`}
-                className={index === 0 ? "bg-[#00F2FF]" : index === 1 ? "bg-[#C336F4]" : index === 2 ? "bg-[#19E6AD]" : ""}
+                className={
+                  index === 0
+                    ? "bg-[#00F2FF]"
+                    : index === 1
+                    ? "bg-[#C336F4]"
+                    : index === 2
+                    ? "bg-[#19E6AD]"
+                    : ""
+                }
               />
             ))}
           </div>
         )}
 
         <div className="flex -space-x-4">
-           <h2 className="font-extrabold text-[#1E1E1E] dark:text-white text-lg">{users}+</h2>
+          <h2 className="font-extrabold text-[#1E1E1E] dark:text-white text-lg">
+            {users}+
+          </h2>
         </div>
       </div>
     </div>
   );
 };
 
-export default ProductCard
+export default ProductCard;

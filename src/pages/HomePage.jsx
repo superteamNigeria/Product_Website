@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Hero from "../components/Hero";
 import ProductCardDisplay from "../components/ProductCardDisplay";
 import Footer from "../components/Footer";
+import data from "../data/products.json"
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -11,15 +12,17 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  console.log("Data:", data)
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const url = 'https://superteamng-products-backend.vercel.app/api/products';
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
-        const data = await response.json();
+        // const url = 'https://superteamng-products-backend.vercel.app/api/products';
+        // const response = await fetch(url);
+        // if (!response.ok) {
+        //   throw new Error('Failed to fetch products');
+        // }
+        // const data = await response.json();
         setProducts(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
