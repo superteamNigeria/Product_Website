@@ -25,15 +25,10 @@ import { logo, whiteLogo } from "../../constants/images";
 
 
 const ENV = {
-  API_BASE_URL: "https://superteamng-products-backend.vercel.app",
-  ADMIN_PASSWORDS: {
-    9835: "Harri",
-    5678: "Nzube",
-    3819: "Alex",
-    2192: "Renee",
-    3838: "Skipp",
-  },
-}
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  ADMIN_PASSWORDS: JSON.parse(import.meta.env.VITE_ADMIN_PASSWORDS),
+};
+
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -181,12 +176,14 @@ const AdminDashboard = () => {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#00ad44] to-slate-900 flex items-center justify-center p-4">
         <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-sm shadow-2xl border border-white/20">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-2xl">ST</span>
+                {/* <span className="text-white font-bold text-2xl">ST</span> */}
+                <img src={whiteLogo} alt="logo" className="h-8 w-auto dark:hidden" />
+
               </div>
             </div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">{isSwitch ? "Switch Admin" : "Admin Dashboard"}</h1>
@@ -207,7 +204,7 @@ const AdminDashboard = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-3 gap-3 mb-6">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                 <button
                   key={num}
