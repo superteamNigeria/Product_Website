@@ -131,7 +131,7 @@ function ProductPage() {
           >
             <img
               // TODO: Replace with product image link from database
-              src={`/images/avatar.jpeg`}
+              src={product.icon}
               alt={product.name}
               className="w-30 h-30 rounded-lg border-4 border-white shadow-md absolute left-15 -bottom-15"
             />

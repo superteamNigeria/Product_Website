@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronRight, ChevronLeft, Check, X, Home, Info, Phone, ImageIcon, Save } from "lucide-react"
+import { ChevronRight, ChevronLeft, Check, X, Home, Info, Phone, Menu, ImageIcon, Plus, Save } from "lucide-react"
+import { logo, logoDark, whiteLogo } from "../../../constants/images";
+import Button from "../../../components/ui/Button";
 
 // Environment variables simulation
 const ENV = {
@@ -281,7 +283,7 @@ const CreateProduct = () => {
 
     return (
       <div className="flex justify-center mb-12">
-        <div className="flex items-center">
+        <div className="flex items-center overflow-x-auto md:overflow-hidden">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
               <div
@@ -313,40 +315,100 @@ const CreateProduct = () => {
     )
   }
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+
   // Header Component
   const Header = () => (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-8">
-          <div className="flex items-center space-x-4">
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold">ST</span>
+
+    <header className="bg-white border-b border-gray-200 py-4  px-0 md:px-6">
+
+      {/* Mobile */}
+      <section className="w-screen h-[80px] flex items-center justify-between  bg-black md:hidden">
+        <a to="/" className="flex-shrink-0">
+          <img
+            src={whiteLogo}
+            alt="logo"
+            className="h-8 w-auto sm:w-[39px] sm:h-[30px] md:hidden"
+          />
+          <img src={logo} alt="logo" className="hidden md:block h-8 w-auto" />
+        </a>
+        <div className="flex items-center gap-2">
+          {/* <ThemeToggle /> */}
+          <button className="p-2" onClick={toggleMobileMenu}>
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6 text-green-base" />
+            ) : (
+              <Menu className="w-6 h-6 text-green-base" />
+            )}
+          </button>
+        </div>
+
+        {/* menu */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-[80px] right-4 w-[149.69px] h-[192.8px] rounded-[24px] p-[17.42px] bg-[#525866] flex flex-col gap-[3px] z-50 items-center justify-center">
+            <div className="flex items-center space-x-4 flex-col">
+              <a href={"/admin"} className="mb-2">
+                <Button
+                  title="Back"
+                  icon={<ChevronLeft />}
+                  styles="bg-green-base text-[#E6F3ED] justify-middle font-regular text-[16px] leading-relaxed w-full text-balance"
+                />
+              </a>
             </div>
-            <span className="font-bold text-xl">superteam</span>
           </div>
-          <div className="flex items-center bg-gray-100 rounded-full px-6 py-2">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2 text-gray-700 hover:text-green-600 cursor-pointer transition-colors">
-                <Home className="w-4 h-4" />
-                <span className="font-medium">Home</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-700 hover:text-green-600 cursor-pointer transition-colors">
-                <Info className="w-4 h-4" />
-                <span className="font-medium">About</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-700 hover:text-green-600 cursor-pointer transition-colors">
-                <Phone className="w-4 h-4" />
-                <span className="font-medium">Contact Us</span>
-              </div>
-            </div>
+        )}
+
+      </section>
+
+      {/*desktop*/}
+      <div className="hidden items-center justify-between md:flex">
+        <div className="flex items-center gap-4">
+          <a href="/" className="flex-shrink-0">
+            {/* <img src={whiteLogo} alt="logo" className="h-8 w-auto dark:hidden" /> */}
+            <img
+              src={logo}
+              alt="logo"
+              className="h-8 w-auto"
+            />
+          </a>
+          <div className="flex items-center bg-neutral-200 dark:bg-[#20232D] px-4 py-2.5 rounded-[17px]">
+            <ul className="flex space-x-6">
+              <a href='/'>
+              <li className="text-black dark:text-white hover:text-green-darker dark:hover:text-green-darker font-semibold cursor-pointer text-sm whitespace-nowrap">
+                Home
+              </li>
+              </a>
+              <a href='/'>
+              <li className="text-black dark:text-white font-semibold hover:text-green-darker dark:hover:text-green-darker cursor-pointer text-sm whitespace-nowrap">
+                About
+              </li>
+              </a>
+              <a href='/'>
+              <li className="text-black dark:text-white font-semibold hover:text-green-darker dark:hover:text-green-darker cursor-pointer text-sm whitespace-nowrap">
+                Contact Us
+              </li>
+              </a>
+            </ul>
           </div>
         </div>
 
-        <button className="flex items-center space-x-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full transition-colors">
-          <span>Submit a Request</span>
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        <div className="flex items-center space-x-4">
+          <a
+            href="/admin"
+            className="flex items-center space-x-2 bg-[#02834e] text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Go Back</span>
+          </a>
+        </div>
       </div>
+
+      
     </header>
   )
 

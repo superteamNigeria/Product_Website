@@ -1,5 +1,5 @@
 import { ChevronRight, Globe, Twitter } from "lucide-react";
-import React, { use } from "react";
+import React, { useState } from "react";
 import { avatar1, avatar2, avatar3, avatar4, avatar5 } from "../constants/images";
 import { Link } from "react-router-dom";
 
@@ -7,45 +7,43 @@ import { Link } from "react-router-dom";
 interface ButtonProps {
   title: string;
   href: string;
-  colors?: string[];
+  brandColors?: string[];
 }
 
-const Button: React.FC<ButtonProps> = ({ title, href, colors = [] }) => {
+const Button: React.FC<ButtonProps> = ({ title, href, brandColors = [] }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
   const getHoverStyle = () => {
-    if (colors.length === 2) {
-      return `linear-gradient(to right, ${colors[0]}, ${colors[1]})`;
-    } else if (colors.length === 1) {
-      return colors[0];
+    if (brandColors.length >= 2) {
+      return `linear-gradient(to right, ${brandColors[0]}, ${brandColors[1]})`;
+    } else if (brandColors.length === 1) {
+      return brandColors[0];
     }
     return "";
   };
 
-  const getSingleBackground = () => {
-    if (colors.length === 1) {
-      return `bg-${colors[0]}`;
-    }
-  };
+  const buttonStyle = isHovered && brandColors.length > 0 
+    ? { background: getHoverStyle() } 
+    : {};
 
   return (
     <Link to={`${href}`}>
-    <button 
-      className="bg-[#E6F3ED] dark:bg-[#20232D]  text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap "
-      style={{
-        background: colors.length === 2 ? getHoverStyle() : undefined,
-        backgroundColor: colors.length === 1 ? colors[0] : undefined,
-      }}
-    >
-      <span className="transition-transform duration-300 group-hover:-translate-x-1">
-        {title}
-      </span>
-      <span className="opacity-0 transform translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 mr-2">
-        <div className="w-8 h-8 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center">
-          <ChevronRight size={20} />
-        </div>
-      </span>
-    </button>
+      <button 
+        className="bg-[#E6F3ED] dark:bg-[#20232D] text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap"
+        style={buttonStyle}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <span className="transition-transform duration-300 group-hover:-translate-x-1">
+          {title}
+        </span>
+        <span className="opacity-0 transform translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 mr-2">
+          <div className="w-8 h-8 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center">
+            <ChevronRight size={20} />
+          </div>
+        </span>
+      </button>
     </Link>
-    
   );
 };
 
@@ -92,7 +90,7 @@ interface ProductCardProps {
   x: string;
   website: string;
   users: string;
-  colors: string[];
+  brandColors: string[];
 }
 
 const ProductCard = ({
@@ -103,7 +101,7 @@ const ProductCard = ({
   x,
   website,
   users,
-  colors,
+  brandColors,
 }: ProductCardProps) => {
   const avatars = [avatar1, avatar2, avatar3];
   return (
@@ -153,7 +151,11 @@ const ProductCard = ({
 
       {/* Bottom section */}
       <div className="p-1 flex justify-between items-center pt-2 gap-2">
-        <Button title="Read More" href={`/product/${href}`} colors={colors} />
+        <Button 
+          title="Read More" 
+          href={`/product/${href}`} 
+          brandColors={brandColors} // Pass brandColors to Button
+        />
 
         {/* Avatar stack */}
         {avatars && avatars.length > 0 && (

@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { Globe, Twitter } from "lucide-react";
+import { Globe, Twitter, Mail } from "lucide-react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -31,12 +31,13 @@ const TeamMember = ({ name, twitter, image, position }) => {
         <div className="flex gap-2 items-center">
           <p className="font-semibold">{name}</p>
           <a
-            href={twitter}
+            href={`mailto:${name}`}
             className="p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-green-base transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Twitter size={20} />
+            {/* <Twitter size={20} /> */}
+            <Mail size={20} />
           </a>
         </div>
 
@@ -132,6 +133,8 @@ function ProductPage() {
     return <Loading />;
   }
 
+  // console.log(product.icon)
+
   if (error || !product) {
     return (
       <section className="flex flex-col items-center justify-center min-h-screen px-4 text-center bg-white dark:bg-[#0A0D14] text-gray-700 dark:text-gray-300">
@@ -154,24 +157,27 @@ function ProductPage() {
 
   // Helper for brand colors fallback
   const brandColor = product.brandColors && product.brandColors.length > 0 ? product.brandColors[0] : "#E2E4E9";
+  // console.log(product.brandColors)
   // Helper for gallery image fallback
   const productImage = product.gallery && product.gallery.length > 0 ? product.gallery[0] : "/images/avatar.jpeg";
+  const readableLaunchDate = new Date(product.launchDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
 
   return (
-    <section className="flex-1 lg:px-[80px] lg:py-[48px] p-4 dark:bg-[#0A0D14] min-h-screen font-regular">
-      <Header />
+    <section className="flex-1 lg:px-[80px] lg:py-[48px] dark:bg-[#0A0D14] min-h-screen font-regular">
+      <Header isHome={false} />
 
       {/* Product details section */}
-      <div className="py-10 text-black dark:text-white font-regular text-sm sm:text-base md:text-lg leading-relaxed">
-        <div className="w-full border border-[#E2E4E9] rounded-xl overflow-hidden mb-8 shadow-sm">
+      <div className="py-10 text-black dark:text-white px-4 font-regular text-sm sm:text-base md:text-lg leading-relaxed">
+        <div className="w-full border border-[#20232d] rounded-xl overflow-hidden mb-8 shadow-sm">
           <div
             className="relative h-[110px] w-full"
             style={{ backgroundColor: brandColor }}
           >
             <img
-              src={productImage}
+              src={product.icon}
               alt={product.name}
-              className="w-30 h-30 rounded-lg border-4 border-white shadow-md absolute left-15 -bottom-15"
+              className="w-30 h-30 rounded-lg border-white border-4 bg-white shadow-md absolute left-15 -bottom-15"
             />
           </div>
           <div className="flex flex-col md:flex-row justify-between p-6 pt-20 gap-6">
@@ -182,9 +188,9 @@ function ProductPage() {
                   <Badge key={cat} variant={cat}>{cat}</Badge>
                 ))}
               </div>
-              <p className="text-sm mt-2 text-gray-500">
+              {/* <p className="text-sm mt-2 text-gray-500">
                 {product.description}
-              </p>
+              </p> */}
             </div>
 
             <div className="flex items-center justify-between md:justify-normal gap-4 w-full md:w-auto">
@@ -201,14 +207,22 @@ function ProductPage() {
                     ))}
                   </div>
                   <span className="text-lg md:text-xl font-semibold">
-                    {product.userCount}
+                    {product.userCount}+
                   </span>
                 </div>
               )}
 
-              <button className="bg-gradient-to-r from-[#223FD3] to-[#DC97EF] text-white font-regular px-5 md:px-6 py-2.5 md:py-3 rounded-lg flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-sm md:text-[14px] group overflow-hidden text-center whitespace-nowrap">
-                Contact us
-              </button>
+              <a href={product.xAccount} target="_blank">
+                <button
+                  style={{
+                    background: `linear-gradient(to right, ${product.brandColors[0]}, ${product.brandColors[1]})`
+                  }}
+                  className="text-white cursor-pointer font-regular px-5 md:px-6 py-2.5 md:py-3 rounded-lg flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-sm md:text-[14px] group overflow-hidden text-center whitespace-nowrap"
+                >
+                  Contact us
+                </button>
+              </a>
+
             </div>
           </div>
         </div>
@@ -216,7 +230,7 @@ function ProductPage() {
         {/* About */}
         <div className="mb-10">
           <div className="flex justify-between items-baseline">
-            <h2 className="text-4xl font-semibold mb-2">About</h2>
+            <h2 className="text-4xl font-bold mb-2">About</h2>
 
             {/* Social links */}
             <div className="flex gap-1 -space-x-4 ml-2">
@@ -253,11 +267,11 @@ function ProductPage() {
             <h3>Number of monthly active users</h3>
             <p className="text-xl">{product.userCount} active users</p>
           </div>
+
           <div className="text-3xl font-semibold mb-2">
-            <h3>Transaction Volume</h3>
+            <h3>Launch Date</h3>
             <p className="text-xl">
-              {formatVolume(product.transactionVolume)} USDC processed since
-              launch.
+              {product.name} launched {readableLaunchDate}.
             </p>
           </div>
         </div>

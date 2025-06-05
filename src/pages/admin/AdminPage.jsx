@@ -14,13 +14,17 @@ import {
   Clock,
   FileText,
   Home,
+  X, Menu, ChevronRight,
   Info,
   Phone,
   ChevronDown,
   Download,
   Plus,
 } from "lucide-react"
-import { logo, whiteLogo } from "../../constants/images";
+import { logo, logoDark, whiteLogo } from "../../constants/images";
+import Button from "../../components/ui/Button";
+
+// import { whiteLogo } from "/whiteLogo.png";
 
 
 
@@ -28,7 +32,6 @@ const ENV = {
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || "",
   ADMIN_PASSWORDS: JSON.parse(import.meta.env.VITE_ADMIN_PASSWORDS || '{}'),
 };
-
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -49,6 +52,8 @@ const AdminDashboard = () => {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [bulkActionLoading, setBulkActionLoading] = useState(false)
   const [showBulkActions, setShowBulkActions] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
 
   // Bulk Actions Functions
   const handleBulkApprove = async () => {
@@ -67,6 +72,12 @@ const AdminDashboard = () => {
       setBulkActionLoading(false)
     }
   }
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+
 
   const handleBulkReject = async () => {
     if (selectedProducts.length === 0) return
@@ -177,17 +188,20 @@ const AdminDashboard = () => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#00ad44] to-slate-900 flex items-center justify-center p-4">
-        <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-sm shadow-2xl border border-white/20">
+        <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-sm shadow-2xl border border-white/20 dark:bg-[#0A0D14]">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
                 {/* <span className="text-white font-bold text-2xl">ST</span> */}
-                <img src={whiteLogo} alt="logo" className="h-8 w-auto dark:hidden" />
-
+                <img src={logo} alt="Logo Light" className="h-8 w-auto block dark:hidden" />
+                <img src={whiteLogo} alt="Logo Dark" className="h-8 w-auto hidden dark:block" />
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">{isSwitch ? "Switch Admin" : "Admin Dashboard"}</h1>
-            <p className="text-gray-600">Enter your passcode to continue</p>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2 dark:text-gray-200">
+              {isSwitch ? "Switch Admin" : "Admin Dashboard"}
+            </h1>
+
+            <p className="text-gray-600 dark:text-gray-200">Enter your passcode to continue</p>
           </div>
 
           <div className="mb-8">
@@ -209,26 +223,26 @@ const AdminDashboard = () => {
                 <button
                   key={num}
                   onClick={() => handleNumberPress(num)}
-                  className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-xl font-semibold text-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-xl font-semibold text-gray-800 transition-all duration-200 shadow-sm hover:shadow-md dark:text-gray-200 dark:bg-[#131926]" 
                 >
                   {num}
                 </button>
               ))}
               <button
                 onClick={handleClear}
-                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-sm font-semibold text-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-sm font-semibold text-gray-600 transition-all duration-200 shadow-sm hover:shadow-md dark:text-gray-200 dark:bg-[#131926]"
               >
                 Clear
               </button>
               <button
                 onClick={() => handleNumberPress(0)}
-                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-xl font-semibold text-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-xl font-semibold text-gray-800 transition-all duration-200 shadow-sm hover:shadow-md dark:text-gray-200 dark:bg-[#131926]"
               >
                 0
               </button>
               <button
                 onClick={handleDelete}
-                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-lg font-semibold text-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="w-18 h-18 rounded-2xl bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-lg font-semibold text-gray-600 transition-all duration-200 shadow-sm hover:shadow-md dark:text-gray-200 dark:bg-[#131926]"
               >
                 ⌫
               </button>
@@ -248,18 +262,32 @@ const AdminDashboard = () => {
     )
   }
 
+  const getAvatarIndex = (username) => {
+    // Simple hash to convert username to consistent number between 1-8
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      hash = (hash << 5) - hash + username.charCodeAt(i);
+      hash |= 0; // Convert to 32bit integer
+    }
+    return Math.abs(hash % 5) + 1;
+  };
+
   // Admin Switcher Component
   const AdminSwitcher = () => (
+    
     <div className="relative">
       <button
         onClick={() => setShowAdminSwitcher(!showAdminSwitcher)}
-        className="flex items-center space-x-3 bg-[#02834e]  text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl"
+        className="flex items-center space-x-3 bg-[#02834e] text-white px-4 py-2 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl"
       >
         <ChevronDown className="w-4 h-4" />
         <span className="font-medium">{currentUser}</span>
-        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-          <span className="text-sm font-bold">{currentUser?.[0]}</span>
-        </div>
+        {/* Avatar image instead of initial */}
+        <img 
+          src={`/images/avatar${getAvatarIndex(currentUser)}.png`} 
+          alt={currentUser}
+          className="w-8 h-8 rounded-full object-cover border-2 border-white"
+        />
       </button>
 
       {showAdminSwitcher && (
@@ -271,23 +299,27 @@ const AdminDashboard = () => {
             <button
               key={pin}
               onClick={() => {
-                setSwitchingAdmin(true)
-                setShowAdminSwitcher(false)
+                setSwitchingAdmin(true);
+                setShowAdminSwitcher(false);
               }}
               className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 transition-colors"
             >
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 font-medium text-sm">{username[0]}</span>
-              </div>
+              {/* Admin avatar image */}
+              <img 
+                src={`/images/avatar${getAvatarIndex(username)}.png`} 
+                alt={username}
+                className="w-8 h-8 rounded-full object-cover"
+              />
               <div>
                 <p className="font-medium text-gray-900">{username}</p>
-                <p className="text-xs text-gray-500">PIN: {pin}</p>
+                {/* <p className="text-xs text-gray-500">PIN: {pin}</p> */}
               </div>
             </button>
           ))}
         </div>
       )}
     </div>
+  
   )
 
   // Action Modal Component
@@ -520,15 +552,58 @@ const AdminDashboard = () => {
 
   // Header Component
   const Header = () => (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
-      <div className="flex items-center justify-between">
+    <header className="bg-white border-b border-gray-200 py-4 px-0 md:px-6">
+
+      {/* Mobile */}
+      <section className="w-screen h-[80px] flex items-center justify-between  bg-black md:hidden">
+        <a to="/" className="flex-shrink-0">
+          <img
+            src={whiteLogo}
+            alt="logo"
+            className="h-8 w-auto sm:w-[39px] sm:h-[30px] md:hidden"
+          />
+          <img src={logo} alt="logo" className="hidden md:block h-8 w-auto" />
+        </a>
+        <div className="flex items-center gap-2">
+          {/* <ThemeToggle /> */}
+          <button className="p-2" onClick={toggleMobileMenu}>
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6 text-green-base" />
+            ) : (
+              <Menu className="w-6 h-6 text-green-base" />
+            )}
+          </button>
+        </div>
+
+        {/* menu */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-[80px] right-4 w-[149.69px] h-[192.8px] rounded-[24px] p-[17.42px] bg-[#525866] flex flex-col gap-[3px] z-50 items-center justify-center">
+            <div className="flex items-center space-x-4 flex-col">
+              <a href={"/create-product"} className="mb-2">
+                <Button
+                  title="Add"
+                  icon={<Plus />}
+                  styles="bg-green-base text-[#E6F3ED] justify-middle font-regular text-[16px] leading-relaxed w-full text-balance"
+                />
+              </a>
+              <div className="flex items-center space-x-3">
+                <AdminSwitcher />
+              </div>
+            </div>
+          </div>
+        )}
+
+      </section>
+
+      {/*desktop*/}
+      <div className="hidden items-center justify-between md:flex">
         <div className="flex items-center gap-4">
           <a href="/" className="flex-shrink-0">
-            <img src={logo} alt="logo" className="h-8 w-auto dark:hidden" />
+            {/* <img src={whiteLogo} alt="logo" className="h-8 w-auto dark:hidden" /> */}
             <img
-              src={whiteLogo}
+              src={logo}
               alt="logo"
-              className="h-8 w-auto hidden dark:block"
+              className="h-8 w-auto"
             />
           </a>
           <div className="flex items-center bg-neutral-200 dark:bg-[#20232D] px-4 py-2.5 rounded-[17px]">
@@ -566,13 +641,15 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      
     </header>
   )
 
   // Navigation Tabs
   const NavigationTabs = () => (
     <nav className="bg-white border-b border-gray-200 px-6">
-      <div className="flex space-x-8">
+      <div className="flex space-x-8 overflow-x-auto">
         {["Dashboard", "Product Submissions", "Edit Requests", "JSON Exports", "Team Settings"].map((tab) => (
           <button
             key={tab}
@@ -617,7 +694,7 @@ const AdminDashboard = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 hidden md:block">{title}</h3>
             <div className="flex items-center space-x-3">
               {showSearch && (
                 <div className="relative">
@@ -637,24 +714,13 @@ const AdminDashboard = () => {
               >
                 <Filter className="w-4 h-4 text-gray-500" />
               </button>
-
-              {/* Export Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={exportAllProducts}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Export</span>
-                </button>
-              </div>
             </div>
           </div>
 
           {/* Bulk Actions Bar */}
           {showBulkActions && (
             <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-col md:flex-row">
                 <span className="text-sm font-medium text-blue-900">
                   {selectedProducts.length} product{selectedProducts.length !== 1 ? "s" : ""} selected
                 </span>
@@ -665,13 +731,6 @@ const AdminDashboard = () => {
                     className="px-3 py-1 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white text-sm rounded-lg transition-colors"
                   >
                     {bulkActionLoading ? "Processing..." : "Approve"}
-                  </button>
-                  <button
-                    onClick={handleBulkReject}
-                    disabled={bulkActionLoading}
-                    className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 text-white text-sm rounded-lg transition-colors"
-                  >
-                    {bulkActionLoading ? "Processing..." : "Reject"}
                   </button>
                   <button
                     onClick={handleBulkDelete}
@@ -732,9 +791,6 @@ const AdminDashboard = () => {
                   Email
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Founder
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -758,18 +814,20 @@ const AdminDashboard = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-gray-900">{product.name}</span>
+                      <a href={`/product/${product.id}`} target="_blank" className="text-sm font-medium text-gray-900">{product.name}</a>
                       <span className="text-gray-400">🔗</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-900">{product.teamMembers?.[0] || "N/A"}</span>
+                      <a 
+                        href={product.teamMembers?.[0] ? `mailto:${product.teamMembers[0]}` : undefined} 
+                        className="text-sm text-gray-900"
+                      >
+                        {product.teamMembers?.[0] || "N/A"}
+                      </a>
                       <span className="text-gray-400">🔗</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900">{product.founder || "N/A"}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -782,7 +840,7 @@ const AdminDashboard = () => {
                       {product.isApproved ? "Approved" : "Unapproved"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5 minutes ago</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(product.updatedAt).toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
                       onClick={() => {
@@ -981,6 +1039,17 @@ const AdminDashboard = () => {
             <div className="mb-6">
               <h1 className="text-2xl text-center font-bold text-gray-900">JSON Exports</h1>
             </div>
+
+            {/* Export Dropdown */}
+            <div className="relative">
+              <button
+                onClick={exportAllProducts}
+                className="flex items-center justify-center w-full text-center mb-3 space-x-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export</span>
+              </button>
+            </div>
             <ProductTable title="JSON Export Requests" data={filteredProducts} />
           </div>
         )
@@ -988,7 +1057,7 @@ const AdminDashboard = () => {
         return (
           <div>
             <div className="mb-6">
-              <h1 className="text-2xl text-center font-bold text-gray-900">Team Settings</h1>
+              <h1 className="text-2xl text-center font-bold text-gray-900 ">Team Settings</h1>
             </div>
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Team Members</h3>
@@ -1001,16 +1070,7 @@ const AdminDashboard = () => {
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">{username}</p>
-                        <p className="text-sm text-gray-500">PIN: {pin}</p>
                       </div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-gray-400 hover:text-red-600 transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
                     </div>
                   </div>
                 ))}
@@ -1028,8 +1088,8 @@ const AdminDashboard = () => {
     <footer className="bg-white border-t border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <span className="font-bold text-xl">superteam</span>
-          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <span className="font-bold text-xl">superteam 🇳🇬</span>
+          {/* <div className="w-2 h-2 bg-green-500 rounded-full"></div> */}
         </div>
         <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
           <div className="flex space-x-4">
