@@ -139,7 +139,7 @@ function ProductPage() {
     return (
       <section className="flex flex-col items-center justify-center min-h-screen px-4 text-center bg-white dark:bg-[#0A0D14] text-gray-700 dark:text-gray-300">
         <div className="text-6xl mb-4">🔍</div>
-        <h1 className="text-2xl md:text-3xl font-semibold mb-2">
+        <h1 style={{ fontSize: '40pt' }} className="font-semibold mb-2">
           Product Not Found
         </h1>
         <p className="text-sm md:text-base mb-6 text-gray-500 dark:text-gray-400">
@@ -182,7 +182,7 @@ function ProductPage() {
           </div>
           <div className="flex flex-col md:flex-row justify-between p-6 pt-20 gap-6">
             <div>
-              <h1 className="text-4xl font-semibold">{product.name}</h1>
+              <h1 style={{ fontSize: '40pt' }} className="font-semibold">{product.name}</h1>
               <div className="flex flex-wrap gap-2 mt-2">
                 {product.category && product.category.map((cat) => (
                   <Badge key={cat} variant={cat}>{cat}</Badge>
@@ -230,7 +230,7 @@ function ProductPage() {
         {/* About */}
         <div className="mb-10">
           <div className="flex justify-between items-baseline">
-            <h2 className="text-4xl font-bold mb-2">About</h2>
+            <h2 style={{ fontSize: '32pt' }} className="font-bold mb-2">About</h2>
 
             {/* Social links */}
             <div className="flex gap-1 -space-x-4 ml-2">
@@ -263,13 +263,13 @@ function ProductPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 font-bold">
-          <div className="text-3xl font-semibold mb-2">
-            <h3>Number of monthly active users</h3>
+          <div className="font-semibold mb-2">
+            <h3 style={{ fontSize: '24pt' }}>Number of monthly active users</h3>
             <p className="text-xl">{product.userCount} active users</p>
           </div>
 
-          <div className="text-3xl font-semibold mb-2">
-            <h3>Launch Date</h3>
+          <div className="font-semibold mb-2">
+            <h3 style={{ fontSize: '24pt' }}>Launch Date</h3>
             <p className="text-xl">
               {product.name} launched {readableLaunchDate}.
             </p>
@@ -279,7 +279,7 @@ function ProductPage() {
         {/* Team Section */}
         {product.teamMembers && product.teamMembers.length > 0 && (
           <div>
-            <h2 className="text-4xl font-semibold mb-2 font-size 32pt">Team</h2>
+            <h2 style={{ fontSize: '32pt' }} className="font-semibold mb-2">Team</h2>
 
             <div className="space-y-4">
               {product.teamMembers.map((member, index) => (
