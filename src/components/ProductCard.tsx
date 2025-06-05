@@ -59,12 +59,13 @@ const Badge = ({ children, variant }) => {
     Stablecoins: "bg-[#374151] font-regular text-white text-center",
     Gaming: "bg-[#0EA5E9] font-regular text-white text-center",
     AI: "bg-[#9CA3AF] font-regular text-white text-center",
+    Infrastructure: "bg-[#8B5CF6] font-regular text-white text-center",
     Other: "bg-[#9CA3AF] font-regular text-white text-center",
   };
 
   return (
     <span
-      className={`px-3 py-1 rounded-full text-sm font-medium ${variants[variant]}`}
+      className={`px-3 py-1 rounded-full text-sm font-medium ${variants[variant] || variants.Other}`}
     >
       {children}
     </span>
@@ -104,6 +105,12 @@ const ProductCard = ({
   brandColors,
 }: ProductCardProps) => {
   const avatars = [avatar1, avatar2, avatar3];
+  
+  // Limit the number of visible categories to prevent layout issues
+  const maxVisibleCategories = 3;
+  const visibleCategories = categories.slice(0, maxVisibleCategories);
+  const remainingCount = categories.length - maxVisibleCategories;
+
   return (
     <div className="rounded-2xl p-4 max-w-md mx-auto">
       {/* Header section */}
@@ -113,13 +120,19 @@ const ProductCard = ({
             {name}
           </h2>
 
-          {/* Category badges */}
-          <div className="flex gap-2 mb-4 text-center">
-            {categories?.map((category, index) => (
+          {/* Category badges - Updated to show multiple categories */}
+          <div className="flex flex-wrap gap-2 mb-4 text-center">
+            {visibleCategories.map((category, index) => (
               <Badge key={index} variant={category}>
                 {category}
               </Badge>
             ))}
+            {/* Show remaining count if there are more categories */}
+            {remainingCount > 0 && (
+              <Badge variant="Other">
+                +{remainingCount} more
+              </Badge>
+            )}
           </div>
         </div>
 
@@ -154,7 +167,7 @@ const ProductCard = ({
         <Button 
           title="Read More" 
           href={`/product/${href}`} 
-          brandColors={brandColors} // Pass brandColors to Button
+          brandColors={brandColors}
         />
 
         {/* Avatar stack */}
