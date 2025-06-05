@@ -279,7 +279,7 @@ function ProductPage() {
         {/* Team Section */}
         {product.teamMembers && product.teamMembers.length > 0 && (
           <div>
-            <h2 className="text-4xl font-semibold mb-2">Team</h2>
+            <h2 className="text-4xl font-semibold mb-2 font-size 32pt">Team</h2>
 
             <div className="space-y-4">
               {product.teamMembers.map((member, index) => (
