@@ -264,7 +264,7 @@ function ProductPage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 font-bold">
           <div className="font-semibold mb-2">
-            <h3 style={{ fontSize: '24pt' }}>Number of monthly active users</h3>
+            <h3 style={{ fontSize: '20px' }}>Number of monthly active users</h3>
             <p className="text-xl">{product.userCount} active users</p>
           </div>
 
