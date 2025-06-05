@@ -10,7 +10,7 @@ interface Product {
   xAccount: string;
   userCount: string;
   features: string[];
-  colors: string[];
+  brandColors: string[]; // Changed from colors to brandColors
   status: string;
 }
 
@@ -22,7 +22,7 @@ interface ProductCardProps {
   x: string;
   website: string;
   users: string;
-  colors: string[];
+  brandColors: string[]; // Changed from colors to brandColors
 }
 
 interface ProductCardDisplayProps {
@@ -104,7 +104,7 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory, products, loading, 
             x={product.xAccount}
             website={product.website}
             users={product.userCount}
-            colors={product.colors}
+            brandColors={product.brandColors} // Pass brandColors instead of colors
           />
         ))}
       </div>

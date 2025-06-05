@@ -1,17 +1,18 @@
-@font-face {
+  @font-face {
     font-family: "Archivo-Regular";
-    src: url("./fonts/Archivo_SemiExpanded-Regular.ttf");
+    src: url("/fonts/Archivo_SemiExpanded-Regular.ttf");
   }
-  
+
   @font-face {
     font-family: "Archivo-SemiBold";
-    src: url("./fonts/Archivo_SemiExpanded-SemiBold.ttf");
+    src: url("/fonts/Archivo_SemiExpanded-SemiBold.ttf");
   }
-  
+
   @font-face {
     font-family: "Archivo-Bold";
-    src: url("./fonts/Archivo_SemiExpanded-Bold.ttf");
+    src: url("/fonts/Archivo_SemiExpanded-Bold.ttf");
   }
+
   
   @import "tailwindcss";
   
@@ -24,7 +25,7 @@
   /* Theme tokens */
   @theme {
     --color-green-darker: #015030;
-    --color-green-dark: #1015C37;
+    --color-green-dark: #006400;
     --color-green-base: #02834E;
     --color-green-light: #2D986C;
     --color-green-lighter: #6CB798;
