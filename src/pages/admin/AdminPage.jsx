@@ -20,6 +20,7 @@ import {
   ChevronDown,
   Download,
   Plus,
+  RefreshCcw,
 } from "lucide-react"
 import { logo, logoDark, whiteLogo } from "../../constants/images";
 import Button from "../../components/ui/Button";
@@ -347,6 +348,10 @@ const AdminDashboard = () => {
       window.open(`/product/${product.id}`, "_blank")
     }
 
+    const handleUpdateProduct = () => {
+      window.open(`/admin/update/${product.id}`, "_blank")
+    }
+
     const handleDeleteProduct = async () => {
       if (window.confirm("Are you sure you want to delete this product?")) {
         setUpdating(true)
@@ -404,6 +409,15 @@ const AdminDashboard = () => {
                 <span>View</span>
               </button>
             </div>
+
+            <button
+              onClick={handleUpdateProduct}
+              disabled={updating}
+              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+            >
+              <RefreshCcw className="w-4 h-4" />
+              <span>{updating ? "Opening..." : "Update Product"}</span>
+            </button>
 
             <button
               onClick={handleDeleteProduct}

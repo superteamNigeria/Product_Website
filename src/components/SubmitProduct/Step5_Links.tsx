@@ -1,34 +1,37 @@
-import React from "react";
+"use client"
+
+import type React from "react"
 
 interface Props {
-  data: any;
-  onUpdate: (data: any) => void;
-  errors?: Record<string, string>;
+  data: any
+  onUpdate: (data: any) => void
+  errors?: Record<string, string>
 }
 
 const Step5_Links = ({ data, onUpdate, errors }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    onUpdate({ [name]: value });
-  };
+    const { name, value } = e.target
+    onUpdate({ [name]: value })
+  }
 
-  const handleAppStoreChange = (field: 'hasApp' | 'url', value: boolean | string) => {
-    const currentAppstore = data.appstore || [false, ""];
-    if (field === 'hasApp') {
-      onUpdate({ appstore: [value, currentAppstore[1]] });
+  // Updated to match CreateProductPage.jsx app store handling
+  const handleAppStoreChange = (field: "hasApp" | "url", value: boolean | string) => {
+    const currentAppstore = data.appstore || [false, ""]
+    if (field === "hasApp") {
+      onUpdate({ appstore: [value, currentAppstore[1]] })
     } else {
-      onUpdate({ appstore: [currentAppstore[0], value] });
+      onUpdate({ appstore: [currentAppstore[0], value] })
     }
-  };
+  }
 
-  const handlePlayStoreChange = (field: 'hasApp' | 'url', value: boolean | string) => {
-    const currentPlaystore = data.playstore || [false, ""];
-    if (field === 'hasApp') {
-      onUpdate({ playstore: [value, currentPlaystore[1]] });
+  const handlePlayStoreChange = (field: "hasApp" | "url", value: boolean | string) => {
+    const currentPlaystore = data.playstore || [false, ""]
+    if (field === "hasApp") {
+      onUpdate({ playstore: [value, currentPlaystore[1]] })
     } else {
-      onUpdate({ playstore: [currentPlaystore[0], value] });
+      onUpdate({ playstore: [currentPlaystore[0], value] })
     }
-  };
+  }
 
   return (
     <div className="space-y-8">
@@ -37,41 +40,54 @@ const Step5_Links = ({ data, onUpdate, errors }: Props) => {
 
       {/* Website */}
       <div>
-        <label className="block mb-1 font-medium dark:text-white">Website:</label>
+        <label className="block mb-1 font-medium dark:text-white">
+          Website URL <span className="text-red-500">*</span>
+        </label>
         <input
           name="website"
           value={data.website}
           onChange={handleChange}
           type="url"
-          placeholder="e.g. https://yourproduct.com"
+          placeholder="https://example.com"
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
-        {errors?.website && (
-          <p className="text-red-500 text-sm mt-1">{errors.website}</p>
-        )}
-        <p className="text-xs text-gray-500 mt-1">Your product's official website or landing page</p>
+        {errors?.website && <p className="text-red-500 text-sm mt-1">{errors.website}</p>}
       </div>
 
-      {/* X/Twitter Account */}
+      {/* X Account (Twitter) */}
       <div>
-        <label className="block mb-1 font-medium dark:text-white">X (Twitter) Account:</label>
+        <label className="block mb-1 font-medium dark:text-white">X Account (Twitter)</label>
+        <div className="flex items-center">
+          <span className="bg-gray-100 px-4 py-3 rounded-l-full border border-r-0 border-[#E2E4E9] text-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+            @
+          </span>
+          <input
+            type="text"
+            name="xAccount"
+            value={data.xAccount}
+            onChange={handleChange}
+            placeholder="username"
+            className="flex-1 px-4 py-3 rounded-r-full border border-[#E2E4E9] focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
+          />
+        </div>
+      </div>
+
+      {/* Explainer Video */}
+      <div>
+        <label className="block mb-1 font-medium dark:text-white">Explainer Video URL</label>
         <input
-          name="xAccount"
-          value={data.xAccount}
+          type="url"
+          name="explainerVideo"
+          value={data.explainerVideo}
           onChange={handleChange}
-          type="text"
-          placeholder="e.g. @yourproduct or https://x.com/yourproduct"
+          placeholder="https://youtube.com/watch?v=..."
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
-        {errors?.xAccount && (
-          <p className="text-red-500 text-sm mt-1">{errors.xAccount}</p>
-        )}
-        <p className="text-xs text-gray-500 mt-1">Your product's X (formerly Twitter) handle or profile URL</p>
       </div>
 
-      {/* App Store */}
+      {/* App Store Links */}
       <div>
-        <label className="block mb-1 font-medium dark:text-white">App Store Presence:</label>
+        <label className="block mb-1 font-medium dark:text-white">App Store Links</label>
         <div className="space-y-4">
           {/* iOS App Store */}
           <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
@@ -79,7 +95,7 @@ const Step5_Links = ({ data, onUpdate, errors }: Props) => {
               <input
                 type="checkbox"
                 checked={data.appstore?.[0] || false}
-                onChange={(e) => handleAppStoreChange('hasApp', e.target.checked)}
+                onChange={(e) => handleAppStoreChange("hasApp", e.target.checked)}
                 className="w-4 h-4 text-[#02834E] bg-gray-100 border-gray-300 rounded focus:ring-[#02834E] focus:ring-2"
               />
               <label className="ml-2 text-sm font-medium">Available on iOS App Store</label>
@@ -88,7 +104,7 @@ const Step5_Links = ({ data, onUpdate, errors }: Props) => {
               <input
                 type="url"
                 value={data.appstore?.[1] || ""}
-                onChange={(e) => handleAppStoreChange('url', e.target.value)}
+                onChange={(e) => handleAppStoreChange("url", e.target.value)}
                 placeholder="https://apps.apple.com/app/your-app/id123456789"
                 className="w-full border border-[#E2E4E9] rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
               />
@@ -101,7 +117,7 @@ const Step5_Links = ({ data, onUpdate, errors }: Props) => {
               <input
                 type="checkbox"
                 checked={data.playstore?.[0] || false}
-                onChange={(e) => handlePlayStoreChange('hasApp', e.target.checked)}
+                onChange={(e) => handlePlayStoreChange("hasApp", e.target.checked)}
                 className="w-4 h-4 text-[#02834E] bg-gray-100 border-gray-300 rounded focus:ring-[#02834E] focus:ring-2"
               />
               <label className="ml-2 text-sm font-medium">Available on Google Play Store</label>
@@ -110,7 +126,7 @@ const Step5_Links = ({ data, onUpdate, errors }: Props) => {
               <input
                 type="url"
                 value={data.playstore?.[1] || ""}
-                onChange={(e) => handlePlayStoreChange('url', e.target.value)}
+                onChange={(e) => handlePlayStoreChange("url", e.target.value)}
                 placeholder="https://play.google.com/store/apps/details?id=com.yourapp"
                 className="w-full border border-[#E2E4E9] rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
               />
@@ -119,7 +135,7 @@ const Step5_Links = ({ data, onUpdate, errors }: Props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Step5_Links;
+export default Step5_Links

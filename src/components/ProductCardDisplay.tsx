@@ -5,12 +5,12 @@ interface Product {
   id: string;
   name: string;
   description: string;
-  category: string;
+  category: string[]; // Fixed: This should be an array based on your API response
   website: string;
   xAccount: string;
   userCount: string;
   features: string[];
-  brandColors: string[]; // Changed from colors to brandColors
+  brandColors: string[];
   status: string;
 }
 
@@ -22,7 +22,7 @@ interface ProductCardProps {
   x: string;
   website: string;
   users: string;
-  brandColors: string[]; // Changed from colors to brandColors
+  brandColors: string[];
 }
 
 interface ProductCardDisplayProps {
@@ -42,13 +42,16 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory, products, loading, 
     setCurrentPage(1);
   }, [searchQuery, selectedCategory]);
 
-  // Client-side filtering
+  // Client-side filtering - FIXED
   const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+    // Fixed: Check if the selectedCategory is included in the product's category array
+    const matchesCategory = selectedCategory ? product.category.includes(selectedCategory) : true;
+    
     const matchesSearch = searchQuery ? (
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.description.toLowerCase().includes(searchQuery.toLowerCase())
     ) : true;
+    
     return matchesCategory && matchesSearch;
   });
 
@@ -98,13 +101,13 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory, products, loading, 
           <ProductCard 
             key={product.id}
             name={product.name}
-            categories={[product.category]}
+            categories={product.category} // Pass the entire category array
             description={product.description}
             href={product.id}
             x={product.xAccount}
             website={product.website}
             users={product.userCount}
-            brandColors={product.brandColors} // Pass brandColors instead of colors
+            brandColors={product.brandColors}
           />
         ))}
       </div>
