@@ -11,12 +11,13 @@ interface Props {
 // Categories aligned with CreateProductPage.jsx
 const categoryOptions = [
   { value: "DeFi", label: "DeFi" },
-  { value: "NFT", label: "NFT" },
+  { value: "DePIN", label: "DePIN" },
+  { value: "PayFi", label: "PayFi" },
+  { value: "RWAs", label: "RWAs" },
+  { value: "InfoFi", label: "InfoFi" },
+  { value: "Stablecoins", label: "Stablecoins" },
   { value: "Gaming", label: "Gaming" },
-  { value: "Tools", label: "Tools" },
-  { value: "Infrastructure", label: "Infrastructure" },
-  { value: "Social", label: "Social" },
-  { value: "Education", label: "Education" },
+  { value: "AI", label: "AI" },
 ]
 
 const Step1_BasicInfo = ({ data, onUpdate, errors }: Props) => {

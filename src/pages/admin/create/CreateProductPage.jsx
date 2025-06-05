@@ -43,7 +43,7 @@ const CreateProduct = () => {
   const [submitError, setSubmitError] = useState("")
 
   // Categories and statuses
-  const categories = ["DeFi", "NFT", "Gaming", "Tools", "Infrastructure", "Social", "Education"]
+  const categories = ["DeFi", "DePIN", "PayFi", "RWAs", "InfoFi", "Stablecoins", "Gaming", "AI"]
   const statuses = ["Live", "Beta", "Development", "Deprecated"]
 
   // Form validation
