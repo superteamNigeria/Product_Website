@@ -1,11 +1,14 @@
-import React from "react";
+"use client"
+
+import type React from "react"
 
 interface Props {
-  data: any;
-  onUpdate: (data: any) => void;
-  errors?: Record<string, string>;
+  data: any
+  onUpdate: (data: any) => void
+  errors?: Record<string, string>
 }
 
+// Categories aligned with CreateProductPage.jsx
 const categoryOptions = [
   { value: "DeFi", label: "DeFi" },
   { value: "NFT", label: "NFT" },
@@ -14,16 +17,28 @@ const categoryOptions = [
   { value: "Infrastructure", label: "Infrastructure" },
   { value: "Social", label: "Social" },
   { value: "Education", label: "Education" },
-];
+]
 
 const Step1_BasicInfo = ({ data, onUpdate, errors }: Props) => {
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    onUpdate({ [name]: value });
-  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    onUpdate({ [name]: value })
+  }
 
+  // Handle category selection to match CreateProductPage.jsx
+  const handleCategoryChange = (category: string) => {
+    const currentCategories = Array.isArray(data.category) ? data.category : []
+
+    if (currentCategories.includes(category)) {
+      onUpdate({
+        category: currentCategories.filter((cat) => cat !== category),
+      })
+    } else {
+      onUpdate({
+        category: [...currentCategories, category],
+      })
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -33,7 +48,7 @@ const Step1_BasicInfo = ({ data, onUpdate, errors }: Props) => {
       {/* Product Name */}
       <div>
         <label className="block mb-1 font-medium dark:text-white">
-          Product Name: <span className="text-red-500">*</span>
+          Product Name <span className="text-red-500">*</span>
         </label>
         <input
           name="name"
@@ -44,14 +59,13 @@ const Step1_BasicInfo = ({ data, onUpdate, errors }: Props) => {
           required
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
-        {errors?.name && ( <p className="text-red-500 text-sm mt-1">{errors.name}</p>)}
-
+        {errors?.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
       </div>
 
       {/* Description */}
       <div>
         <label className="block mb-1 font-medium dark:text-white">
-          Description: <span className="text-red-500">*</span>
+          Description <span className="text-red-500">*</span>
         </label>
         <textarea
           name="description"
@@ -62,16 +76,13 @@ const Step1_BasicInfo = ({ data, onUpdate, errors }: Props) => {
           rows={4}
           className="w-full border border-[#E2E4E9] rounded-lg px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white resize-none"
         />
-
-        {errors?.description && (
-          <p className="text-red-500 text-sm mt-1">{errors.description}</p>
-        )}
+        {errors?.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
       </div>
 
       {/* Alias/Short Name */}
       <div>
         <label className="block mb-1 font-medium dark:text-white">
-          Alias/Short Name: <span className="text-red-500">*</span>
+          Alias/Short Name <span className="text-red-500">*</span>
         </label>
         <input
           name="alias"
@@ -82,39 +93,35 @@ const Step1_BasicInfo = ({ data, onUpdate, errors }: Props) => {
           required
           className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#02834E] dark:bg-[#1E1E1E] dark:text-white"
         />
-        {errors?.alias && (
-          <p className="text-red-500 text-sm mt-1">{errors.alias}</p>
-        )}
+        {errors?.alias && <p className="text-red-500 text-sm mt-1">{errors.alias}</p>}
         <p className="text-xs text-gray-500 mt-1">This will be used in URLs and must be unique</p>
       </div>
 
-      {/* Category */}
+      {/* Categories - Updated to match CreateProductPage.jsx */}
       <div>
         <label className="block mb-1 font-medium dark:text-white">
-          Category: <span className="text-red-500">*</span>
+          Categories <span className="text-red-500">*</span>
         </label>
-        <select
-          name="category"
-          value={data.category}
-          onChange={handleChange}
-          required
-          className="w-full border border-[#E2E4E9] rounded-full px-5 py-3 text-sm bg-white dark:bg-[#1E1E1E] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#02834E]"
-        >
-          <option value="">Select a category</option>
-          {categoryOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {categoryOptions.map((category) => (
+            <button
+              key={category.value}
+              type="button"
+              onClick={() => handleCategoryChange(category.value)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                data.category && data.category.includes(category.value)
+                  ? "bg-[#02834E] text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              }`}
+            >
+              {category.label}
+            </button>
           ))}
-        </select>
-
-        {errors?.category && (
-          <p className="text-red-500 text-sm mt-1">{errors.category}</p>
-        )}
-
+        </div>
+        {errors?.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Step1_BasicInfo;
+export default Step1_BasicInfo
