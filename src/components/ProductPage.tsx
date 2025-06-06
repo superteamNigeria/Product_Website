@@ -230,7 +230,7 @@ function ProductPage() {
         {/* About */}
         <div className="mb-10">
           <div className="flex justify-between items-baseline">
-            <h2 className="text-4xl font-bold mb-2">About</h2>
+            <h2 className="text-4xl font-bold mb-2">Product Highlights</h2>
 
             {/* Social links */}
             <div className="flex gap-1 -space-x-4 ml-2">
