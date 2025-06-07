@@ -1,0 +1,50 @@
+  @font-face {
+    font-family: "Archivo-Regular";
+    src: url("/fonts/Archivo_SemiExpanded-Regular.ttf");
+  }
+
+  @font-face {
+    font-family: "Archivo-SemiBold";
+    src: url("/fonts/Archivo_SemiExpanded-SemiBold.ttf");
+  }
+
+  @font-face {
+    font-family: "Archivo-Bold";
+    src: url("/fonts/Archivo_SemiExpanded-Bold.ttf");
+  }
+
+  
+  @import "tailwindcss";
+  
+  body {
+    font-family: "Archivo-Regular", sans-serif;
+  }
+  
+  @custom-variant dark (&:is(.dark *));
+  
+  /* Theme tokens */
+  @theme {
+    --color-green-darker: #015030;
+    --color-green-dark: #006400;
+    --color-green-base: #02834E;
+    --color-green-light: #2D986C;
+    --color-green-lighter: #6CB798;
+    --color-green-xLighter: #97CCB6;
+    --color-green-fade: #E673ED;
+  
+    --color-neutral-900: #0A0D14;
+    --color-neutral-800: #161922;
+    --color-neutral-700: #20232D;
+    --color-neutral-600: #31353F;
+    --color-neutral-500: #525866;
+    --color-neutral-400: #868C98;
+    --color-neutral-300: #CDD0D5;
+    --color-neutral-200: #E2E4E9;
+  
+    --font-bold: "Archivo-Bold", sans-serif;
+    --font-regular: "Archivo-Regular", sans-serif;
+    --font-semiBold: "Archivo-SemiBold", sans-serif;
+  
+    --breakpoint-xl: 1444px;
+  }
+  
