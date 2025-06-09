@@ -31,7 +31,7 @@ import Button from "../../components/ui/Button";
 
 const ENV = {
   API_BASE_URL: import.meta.env.VITE_API_BASE_URL || "",
-  ADMIN_PASSWORDS: JSON.parse(import.meta.env.VITE_ADMIN_PASSWORDS || '{}'),
+  ADMIN_PASSWORDS: JSON.parse(import.meta.env.VITE_ADMIN_PASSWORDS || '{"1234": "Harri"}'),
 };
 
 const AdminDashboard = () => {

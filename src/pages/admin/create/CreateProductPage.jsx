@@ -4,6 +4,8 @@ import { useState } from "react"
 import { ChevronRight, ChevronLeft, Check, X, Home, Info, Phone, Menu, ImageIcon, Plus, Save } from "lucide-react"
 import { logo, logoDark, whiteLogo } from "../../../constants/images";
 import Button from "../../../components/ui/Button";
+import { Upload, Loader2 } from "lucide-react";
+
 
 // Environment variables simulation
 const ENV = {
@@ -41,6 +43,10 @@ const CreateProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [submitError, setSubmitError] = useState("")
+  const [iconUploading, setIconUploading] = useState(false);
+  const [iconUploadError, setIconUploadError] = useState("");
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [galleryUploadError, setGalleryUploadError] = useState("");
 
   // Categories and statuses
   const categories = ["DeFi", "DePIN", "PayFi", "RWAs", "InfoFi", "Stablecoins", "Gaming", "AI"]
@@ -173,37 +179,113 @@ const CreateProduct = () => {
     }))
   }
 
-  // File upload handlers (mock implementation)
-  const handleIconUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      // In a real implementation, you would upload to a server/CDN
-      // For now, we'll just use a local URL
+  const handleIconUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setIconUploadError("Please select a valid image file.");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setIconUploadError("File size must be less than 5MB.");
+      return;
+    }
+
+    setIconUploading(true);
+    setIconUploadError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${ENV.API_BASE_URL}/api/upload/icon`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Failed to upload icon");
+      }
+
+      const data = await response.json();
+      setFormData((prev) => ({ ...prev, icon: data.url }));
+    } catch (error) {
+      console.error("Icon upload error:", error);
+      setIconUploadError(error instanceof Error ? error.message : "Failed to upload icon. Please try again.");
+    } finally {
+      setIconUploading(false);
+    }
+  };
+
+  // Gallery upload handler using the designated upload endpoint
+  const handleGalleryUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    // Validate files
+    const validFiles = Array.from(files).filter((file) => {
+      if (!file.type.startsWith("image/")) {
+        setGalleryUploadError(`${file.name} is not a valid image file.`);
+        return false;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setGalleryUploadError(`${file.name} is too large. Maximum size is 5MB.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
+    setGalleryUploading(true);
+    setGalleryUploadError("");
+
+    try {
+      const uploadPromises = validFiles.map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch(`${ENV.API_BASE_URL}/api/upload/image`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.message || `Failed to upload ${file.name}`);
+        }
+
+        const data = await response.json();
+        return data.url;
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
       setFormData((prev) => ({
         ...prev,
-        icon: URL.createObjectURL(file),
-      }))
+        gallery: [...prev.gallery, ...uploadedUrls],
+      }));
+    } catch (error) {
+      console.error("Gallery upload error:", error);
+      setGalleryUploadError(
+        error instanceof Error ? error.message : "Failed to upload one or more images. Please try again."
+      );
+    } finally {
+      setGalleryUploading(false);
     }
-  }
+  };
 
-  const handleGalleryUpload = (e) => {
-    const files = e.target.files
-    if (files.length > 0) {
-      // In a real implementation, you would upload to a server/CDN
-      const newGalleryImages = Array.from(files).map((file) => URL.createObjectURL(file))
-      setFormData((prev) => ({
-        ...prev,
-        gallery: [...prev.gallery, ...newGalleryImages],
-      }))
-    }
-  }
-
+  // Update the removeGalleryImage function to match
   const removeGalleryImage = (index) => {
     setFormData((prev) => ({
       ...prev,
       gallery: prev.gallery.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   // Form submission
   const handleSubmit = async () => {
@@ -829,98 +911,146 @@ const CreateProduct = () => {
         )
 
       case 6:
-        return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Media & Assets</h2>
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-900">Media & Assets</h2>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Product Icon</label>
-                <div className="flex items-center space-x-4">
-                  {formData.icon ? (
-                    <div className="relative">
-                      <img
-                        src={formData.icon || "/placeholder.svg"}
-                        alt="Product icon"
-                        className="w-24 h-24 rounded-xl object-cover border border-gray-200"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setFormData((prev) => ({ ...prev, icon: "" }))}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center bg-gray-50">
-                      <ImageIcon className="w-6 h-6 text-gray-400" />
-                      <span className="text-xs text-gray-500 mt-1">Upload Icon</span>
-                    </div>
-                  )}
-
-                  <div>
-                    <input
-                      type="file"
-                      id="icon-upload"
-                      accept="image/*"
-                      onChange={handleIconUpload}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="icon-upload"
-                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg cursor-pointer inline-block"
-                    >
-                      {formData.icon ? "Change Icon" : "Upload Icon"}
-                    </label>
-                    <p className="text-xs text-gray-500 mt-1">Recommended: 512x512px, PNG or JPG</p>
-                  </div>
-                </div>
+      {/* Product Icon */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Product Icon</label>
+          <div className="flex items-center space-x-4">
+            {formData.icon ? (
+              <div className="relative">
+                <img
+                  src={formData.icon}
+                  alt="Product icon"
+                  className="w-24 h-24 rounded-xl object-cover border border-gray-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData((prev) => ({ ...prev, icon: "" }))}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                  disabled={iconUploading}
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gallery Images</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
-                  {formData.gallery.map((image, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={image || "/placeholder.svg"}
-                        alt={`Gallery image ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-lg border border-gray-200"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeGalleryImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-
-                  <div className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50">
-                    <input
-                      type="file"
-                      id="gallery-upload"
-                      accept="image/*"
-                      multiple
-                      onChange={handleGalleryUpload}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor="gallery-upload"
-                      className="w-full h-full flex flex-col items-center justify-center cursor-pointer"
-                    >
-                      <ImageIcon className="w-6 h-6 text-gray-400" />
-                      <span className="text-sm text-gray-500 mt-1">Add Images</span>
-                    </label>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500">Upload screenshots, product images, etc. (PNG or JPG)</p>
+            ) : (
+              <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center bg-gray-50">
+                {iconUploading ? (
+                  <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                ) : (
+                  <>
+                    <ImageIcon className="w-6 h-6 text-gray-400" />
+                    <span className="text-xs text-gray-500 mt-1">Upload Icon</span>
+                  </>
+                )}
               </div>
+            )}
+
+            <div>
+              <input
+                type="file"
+                id="icon-upload"
+                accept="image/*"
+                onChange={handleIconUpload}
+                className="hidden"
+                disabled={iconUploading}
+              />
+              <label
+                htmlFor="icon-upload"
+                className={`px-4 py-2 rounded-lg cursor-pointer inline-flex items-center space-x-2 text-sm font-medium transition-colors ${
+                  iconUploading
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                }`}
+              >
+                {iconUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Uploading...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4" />
+                    <span>{formData.icon ? "Change Icon" : "Upload Icon"}</span>
+                  </>
+                )}
+              </label>
+              <p className="text-xs text-gray-500 mt-1">Recommended: 512x512px, PNG or JPG, max 5MB</p>
+              {iconUploadError && <p className="text-red-500 text-xs mt-1">{iconUploadError}</p>}
             </div>
           </div>
-        )
+        </div>
+
+        {/* Gallery Images */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Gallery Images</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
+            {formData.gallery.map((image, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={image}
+                  alt={`Gallery image ${index + 1}`}
+                  className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeGalleryImage(index)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                  disabled={galleryUploading}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+
+            <div className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50">
+              <input
+                type="file"
+                id="gallery-upload"
+                accept="image/*"
+                multiple
+                onChange={handleGalleryUpload}
+                className="hidden"
+                disabled={galleryUploading}
+              />
+              <label
+                htmlFor="gallery-upload"
+                className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors rounded-lg"
+              >
+                {galleryUploading ? (
+                  <>
+                    <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                    <span className="text-sm text-gray-500 mt-1">Uploading...</span>
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="w-6 h-6 text-gray-400" />
+                    <span className="text-sm text-gray-500 mt-1">Add Images</span>
+                  </>
+                )}
+              </label>
+            </div>
+          </div>
+          <p className="text-xs text-gray-500">Upload screenshots, product images, etc. (PNG or JPG, max 5MB each)</p>
+          {galleryUploadError && <p className="text-red-500 text-xs mt-1">{galleryUploadError}</p>}
+        </div>
+
+        {/* Upload Tips */}
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h3 className="font-medium text-blue-800 mb-2">💡 Media Tips:</h3>
+          <ul className="text-sm text-blue-700 space-y-1">
+            <li>• Include high-quality screenshots of your product in action</li>
+            <li>• Add your logo or branding images</li>
+            <li>• Consider including before/after comparisons if relevant</li>
+            <li>• Keep video explanations under 3 minutes for better engagement</li>
+            <li>• Use images that are at least 1200px wide for best quality</li>
+            <li>• Maximum file size: 5MB per image</li>
+          </ul>
+        </div>
+      </div>
+    )
 
       default:
         return null
