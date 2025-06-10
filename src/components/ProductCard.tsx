@@ -1,7 +1,14 @@
 import { ChevronRight, Globe, Twitter } from "lucide-react";
 import React, { useState } from "react";
-import { avatar1, avatar2, avatar3, avatar4, avatar5 } from "../constants/images";
+import {
+  avatar1,
+  avatar2,
+  avatar3,
+  avatar4,
+  avatar5,
+} from "../constants/images";
 import { Link } from "react-router-dom";
+import { shortenString } from "../utils/theme";
 
 // Animated Button component
 interface ButtonProps {
@@ -12,7 +19,7 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ title, href, brandColors = [] }) => {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   const getHoverStyle = () => {
     if (brandColors.length >= 2) {
       return `linear-gradient(to right, ${brandColors[0]}, ${brandColors[1]})`;
@@ -22,13 +29,12 @@ const Button: React.FC<ButtonProps> = ({ title, href, brandColors = [] }) => {
     return "";
   };
 
-  const buttonStyle = isHovered && brandColors.length > 0 
-    ? { background: getHoverStyle() } 
-    : {};
+  const buttonStyle =
+    isHovered && brandColors.length > 0 ? { background: getHoverStyle() } : {};
 
   return (
     <Link to={`${href}`}>
-      <button 
+      <button
         className="bg-[#E6F3ED] dark:bg-[#20232D] text-[#2D986C] dark:text-[#868C98] font-regular px-6 hover:px-8 py-3 rounded-[17px] flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-[14px] group overflow-hidden text-center whitespace-nowrap"
         style={buttonStyle}
         onMouseEnter={() => setIsHovered(true)}
@@ -65,7 +71,9 @@ const Badge = ({ children, variant }) => {
 
   return (
     <span
-      className={`px-3 py-1 rounded-full text-sm font-medium ${variants[variant] || variants.Other}`}
+      className={`px-3 py-1 rounded-full text-sm font-medium ${
+        variants[variant] || variants.Other
+      }`}
     >
       {children}
     </span>
@@ -105,7 +113,7 @@ const ProductCard = ({
   brandColors,
 }: ProductCardProps) => {
   const avatars = [avatar1, avatar2, avatar3];
-  
+
   // Limit the number of visible categories to prevent layout issues
   const maxVisibleCategories = 3;
   const visibleCategories = categories.slice(0, maxVisibleCategories);
@@ -129,9 +137,7 @@ const ProductCard = ({
             ))}
             {/* Show remaining count if there are more categories */}
             {remainingCount > 0 && (
-              <Badge variant="Other">
-                +{remainingCount} more
-              </Badge>
+              <Badge variant="Other">+{remainingCount} more</Badge>
             )}
           </div>
         </div>
@@ -159,14 +165,14 @@ const ProductCard = ({
 
       {/* Description */}
       <p className="font-regular text-[#1E1E1E80] dark:text-[#FFFFFF80] leading-relaxed text-[13px] mb-3 text-pretty">
-        {description}
+        {shortenString(description, 125)}
       </p>
 
       {/* Bottom section */}
       <div className="p-1 flex justify-between items-center pt-2 gap-2">
-        <Button 
-          title="Read More" 
-          href={`/product/${href}`} 
+        <Button
+          title="Read More"
+          href={`/product/${href}`}
           brandColors={brandColors}
         />
 

@@ -16,4 +16,12 @@ export function initTheme() {
     document.documentElement.classList.remove("dark");
     return "light";
   }
-} 
+}
+
+export function shortenString(str, maxLength) {
+  if (str.length <= maxLength) {
+    return str;
+  } else {
+    return str.substring(0, maxLength - 3) + "...";
+  }
+}
