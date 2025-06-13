@@ -29,11 +29,15 @@ const Hero = ({ searchQuery, setSearchQuery, selectedCategory, setSelectedCatego
       <h2 className="font-regular leading-4 text-black dark:text-white text-lg sm:text-3xl md:text-3xl mb-4">
         Looking for a Project to{" "}
         <span
-          className={`text-green-base underline transition-all duration-300 ease-out inline-block ${
+          className={`text-green-base underline inline-block ${
             isActionVisible
-              ? "opacity-100 translate-y-0 italic"
-              : "opacity-0 -translate-y-4 italic"
+              ? "animate-fade-in italic"
+              : "animate-fade-out italic"
           }`}
+          style={{
+            animationDuration: '400ms',
+            animationTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
         >
           {actions[currentActionIndex]}
         </span>
@@ -59,7 +63,7 @@ const Hero = ({ searchQuery, setSearchQuery, selectedCategory, setSelectedCatego
               key={index}
               className={`cursor-pointer relative flex items-center justify-center transition-all duration-300 ease-out ${
                 isExpanded
-                  ? "rounded-full px-2 py-2 gap-2"
+                  ? "rounded-full px-3 py-2 gap-2"
                   : "rounded-full px-3 py-2 gap-2"
               }`}
               style={{ backgroundColor: item.hex }}

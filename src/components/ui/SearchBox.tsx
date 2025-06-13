@@ -18,19 +18,19 @@ const SearchBox = ({
   return (
     <div className="flex flex-col justify-center items-center w-full max-w-3xl p-3 gap-2 ">
       <div className="flex items-center w-full gap-2">
-        <div className="flex items-center w-full bg-[#E2E4E9] dark:bg-[#20232D] px-3 py-2.5 rounded-full">
+        <div className={`flex items-center w-full border-1  ${searchQuery ? "border-[#227D39]" : "border-[#E2E4E9] dark:border-[#20232D]"}  px-3 py-2.5 rounded-full`}>
           <Search
-            color={searchQuery ? "#227D39" : "#868C98"}
+            //color={searchQuery ? "#227D39" : "#868C98"}
             width={20}
             height={20}
-            className="flex-shrink-0"
+            className="flex-shrink-0 dark:text-white"
           />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search"
-            className="bg-transparent border-none outline-none text-neutral-600 dark:bg-[#20232D] dark:text-white font-medium ml-3 w-full text-sm"
+            className="bg-transparent border-none outline-none text-neutral-600  dark:text-white font-medium ml-3 w-full text-sm"
           />
         </div>
 
