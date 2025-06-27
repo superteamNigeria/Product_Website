@@ -165,7 +165,7 @@ const Header = ({ isHome = true }: { isHome: boolean }) => {
               />
 
               {bottonClicked && (
-                <div className="absolute top-full left-0 mt-2 flex flex-col gap-2 w-full">
+                <div className="absolute top-full left-0 mt-0.5 flex flex-col gap-2 w-full">
                   <Link to="/submit" className="w-full block">
                     <Button
                       title="Submit Product"
