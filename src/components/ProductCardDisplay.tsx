@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
+import { formatXLink } from "../utils/theme";
 
 interface Product {
   id: string;
@@ -33,7 +34,13 @@ interface ProductCardDisplayProps {
   error: string | null;
 }
 
-const ProductCardDisplay = ({ searchQuery, selectedCategory, products, loading, error }: ProductCardDisplayProps) => {
+const ProductCardDisplay = ({
+  searchQuery,
+  selectedCategory,
+  products,
+  loading,
+  error,
+}: ProductCardDisplayProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const PRODUCTS_PER_PAGE = 10;
 
@@ -43,15 +50,17 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory, products, loading, 
   }, [searchQuery, selectedCategory]);
 
   // Client-side filtering - FIXED
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products.filter((product) => {
     // Fixed: Check if the selectedCategory is included in the product's category array
-    const matchesCategory = selectedCategory ? product.category.includes(selectedCategory) : true;
-    
-    const matchesSearch = searchQuery ? (
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase())
-    ) : true;
-    
+    const matchesCategory = selectedCategory
+      ? product.category.includes(selectedCategory)
+      : true;
+
+    const matchesSearch = searchQuery
+      ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+
     return matchesCategory && matchesSearch;
   });
 
@@ -80,31 +89,39 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory, products, loading, 
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
         <div className="w-16 h-16 text-red-500">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+            />
           </svg>
         </div>
         <p className="mt-4 text-lg font-medium text-red-500">
           Oops! Something went wrong
         </p>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          {error}
-        </p>
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{error}</p>
       </div>
     );
   }
 
   return (
-    <section className='flex flex-wrap justify-center items-start mt-4 mb-4 px-4'>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+    <section className="flex flex-wrap justify-center items-start mt-4 mb-4 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {paginatedProducts.map((product) => (
-          <ProductCard 
+          <ProductCard
             key={product.id}
             name={product.name}
             categories={product.category} // Pass the entire category array
             description={product.description}
             href={product.id}
-            x={product.xAccount}
+            x={formatXLink(product.xAccount)}
             website={product.website}
             users={product.userCount}
             brandColors={product.brandColors}
@@ -124,7 +141,11 @@ const ProductCardDisplay = ({ searchQuery, selectedCategory, products, loading, 
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              className={`px-3 py-1 rounded-full font-medium mx-1 ${currentPage === i + 1 ? 'bg-green-base text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}
+              className={`px-3 py-1 rounded-full font-medium mx-1 ${
+                currentPage === i + 1
+                  ? "bg-green-base text-white"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+              }`}
               onClick={() => setCurrentPage(i + 1)}
             >
               {i + 1}

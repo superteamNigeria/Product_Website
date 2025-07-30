@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import Badge from "../components/ui/Badge";
 import { avatar1, avatar2, avatar3 } from "../constants/images";
 import Loading from "../components/Loading";
+import { formatXLink } from "../utils/theme";
 
 const Avatar = ({ src, alt, className = "" }) => {
   return (
@@ -18,7 +19,7 @@ const Avatar = ({ src, alt, className = "" }) => {
   );
 };
 
-const TeamMember = ({ name, twitter, image, position }) => {
+const TeamMember = ({ name, twitter, position }) => {
   return (
     <div className="flex items-center space-x-4">
       <img
@@ -199,7 +200,7 @@ function ProductPage() {
             {/* Social links */}
             <div className="flex gap-1 -space-x-4 ml-2">
               <a
-                href={product.xAccount}
+                href={formatXLink(product.xAccount)}
                 className="p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-green-base transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"

@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import Badge from "./ui/Badge";
 import { avatar1, avatar2, avatar3 } from "../constants/images";
 import Loading from "../components/Loading";
+import { formatXLink } from "../utils/theme";
 
 const Avatar = ({ src, alt, className = "" }) => {
   return (
@@ -99,7 +100,9 @@ function ProductPage() {
     if (id) {
       setLoading(true);
       setError(null);
-      fetch(`https://superteamng-products-backend.vercel.app/api/products/${id}`)
+      fetch(
+        `https://superteamng-products-backend.vercel.app/api/products/${id}`
+      )
         .then((res) => {
           if (!res.ok) throw new Error("Product not found");
           return res.json();
@@ -143,7 +146,8 @@ function ProductPage() {
           Product Not Found
         </h1>
         <p className="text-sm md:text-base mb-6 text-gray-500 dark:text-gray-400">
-          {error || "The product you're looking for doesn't exist or has been removed."}
+          {error ||
+            "The product you're looking for doesn't exist or has been removed."}
         </p>
         <a
           href="/"
@@ -156,12 +160,20 @@ function ProductPage() {
   }
 
   // Helper for brand colors fallback
-  const brandColor = product.brandColors && product.brandColors.length > 0 ? product.brandColors[0] : "#E2E4E9";
+  const brandColor =
+    product.brandColors && product.brandColors.length > 0
+      ? product.brandColors[0]
+      : "#E2E4E9";
   // console.log(product.brandColors)
   // Helper for gallery image fallback
-  const productImage = product.gallery && product.gallery.length > 0 ? product.gallery[0] : "/images/avatar.jpeg";
-  const readableLaunchDate = new Date(product.launchDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
+  const productImage =
+    product.gallery && product.gallery.length > 0
+      ? product.gallery[0]
+      : "/images/avatar.jpeg";
+  const readableLaunchDate = new Date(product.launchDate).toLocaleDateString(
+    "en-US",
+    { year: "numeric", month: "long", day: "numeric" }
+  );
 
   return (
     <section className="flex-1 lg:px-[80px] lg:py-[48px] dark:bg-[#0A0D14] min-h-screen font-regular">
@@ -184,9 +196,12 @@ function ProductPage() {
             <div>
               <h1 className="text-4xl font-semibold">{product.name}</h1>
               <div className="flex flex-wrap gap-2 mt-2">
-                {product.category && product.category.map((cat) => (
-                  <Badge key={cat} variant={cat}>{cat}</Badge>
-                ))}
+                {product.category &&
+                  product.category.map((cat) => (
+                    <Badge key={cat} variant={cat}>
+                      {cat}
+                    </Badge>
+                  ))}
               </div>
               {/* <p className="text-sm mt-2 text-gray-500">
                 {product.description}
@@ -212,17 +227,20 @@ function ProductPage() {
                 </div>
               )}
 
-              <a href={product.xAccount} target="_blank">
+              <a
+                href={formatXLink(product.xAccount)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <button
                   style={{
-                    background: `linear-gradient(to right, ${product.brandColors[0]}, ${product.brandColors[1]})`
+                    background: `linear-gradient(to right, ${product.brandColors[0]}, ${product.brandColors[1]})`,
                   }}
                   className="text-white cursor-pointer font-regular px-5 md:px-6 py-2.5 md:py-3 rounded-lg flex items-center gap-0 hover:gap-2 hover:shadow-lg transition-all duration-300 text-sm md:text-[14px] group overflow-hidden text-center whitespace-nowrap"
                 >
                   Contact us
                 </button>
               </a>
-
             </div>
           </div>
         </div>
@@ -236,7 +254,7 @@ function ProductPage() {
             <div className="flex gap-1 -space-x-4 ml-2">
               {product.xAccount && (
                 <a
-                  href={product.xAccount}
+                  href={formatXLink(product.xAccount)}
                   className="p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-green-base transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -246,7 +264,11 @@ function ProductPage() {
               )}
               {product.website && (
                 <a
-                  href={product.website.startsWith("http") ? product.website : `https://${product.website}`}
+                  href={
+                    product.website.startsWith("http")
+                      ? product.website
+                      : `https://${product.website}`
+                  }
                   className="p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-green-base transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
