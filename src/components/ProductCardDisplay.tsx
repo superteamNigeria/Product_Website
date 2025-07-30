@@ -42,7 +42,7 @@ const ProductCardDisplay = ({
   error,
 }: ProductCardDisplayProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const PRODUCTS_PER_PAGE = 10;
+  const PRODUCTS_PER_PAGE = 12;
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -112,8 +112,8 @@ const ProductCardDisplay = ({
   }
 
   return (
-    <section className="flex flex-wrap justify-center items-start mt-4 mb-4 px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <section className='flex flex-wrap justify-center items-start'>
+      <div className='justify-between pt-8 pb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
         {paginatedProducts.map((product) => (
           <ProductCard
             key={product.id}
@@ -132,7 +132,7 @@ const ProductCardDisplay = ({
       {totalPages > 1 && (
         <div className="flex justify-center items-center mt-8 gap-2 w-full">
           <button
-            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium disabled:opacity-50"
+            className="px-3 py-1 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium disabled:opacity-50"
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -152,7 +152,7 @@ const ProductCardDisplay = ({
             </button>
           ))}
           <button
-            className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium disabled:opacity-50"
+            className="px-3 py-1 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium disabled:opacity-50"
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage === totalPages}
           >

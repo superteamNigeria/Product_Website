@@ -1,12 +1,63 @@
-# SuperteamNG Product Directory 
+# SuperteamNG Product Directory
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to the SuperteamNG Product Directory!  
+This is an open-source web application for discovering, submitting, and exploring products built by the Superteam Nigeria community and beyond.
 
-Currently, two official plugins are available:
+**GitHub Repository:** [https://github.com/superteamNigeria/Product_Website](https://github.com/superteamNigeria/Product_Website)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- 🌟 **Browse Products:** Explore a curated list of products, filter by category, and search by name or description.
+- 📝 **Submit Products:** Easily add your own product to the directory via a simple submission form.
+- 🔍 **Filter & Search:** Find products by category, keyword, or status (Live, DeFi, DePIN, etc).
+- 🌗 **Dark Mode:** Enjoy a seamless experience with light and dark themes.
+- 📈 **Admin Panel:** Manage product listings (create, update, delete) with admin access.
+- 🔗 **Direct Links:** Visit product websites and social media directly from the directory.
+
+## Getting Started
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/superteamNigeria/Product_Website.git
+   cd Product_Website
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open in your browser:**
+   Visit [http://localhost:5173](http://localhost:5173) to view the app.
+
+## Project Structure
+
+- `src/pages/` — Main pages (Home, Submit, Admin, etc)
+- `src/components/` — Reusable UI components (ProductCard, Footer, etc)
+- `src/constants/` — Static assets and constants
+- `src/utils/` — Utility functions
+
+## Contributing
+
+We welcome contributions!  
+To add a product, use the "Submit" page. For code contributions:
+
+1. Fork the repo
+2. Create a new branch (`git checkout -b feature/your-feature`)
+3. Commit your changes
+4. Open a pull request
+
+## License
+
+MIT
+
+---
+
+Built with ❤️ by the [Superteam Nigeria](https://superteamnigeria.com) community.
