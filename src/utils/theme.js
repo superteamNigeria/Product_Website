@@ -28,9 +28,6 @@ export function shortenString(str, maxLength) {
 
 export function formatXLink(input) {
   const base = "https://x.com/";
-  const hasXLink =
-    input.includes("https://x.com/") || /^@?[\w\d_]+$/.test(input);
-
   if (input.startsWith("https://x.com/")) return input;
 
   if (input.startsWith("@")) {
@@ -41,4 +38,15 @@ export function formatXLink(input) {
   }
   console.log(input);
   return input;
+}
+export function formatWebsiteLink(input) {
+  if (!input) return "";
+
+  let trimmed = input.trim();
+
+  if (!/^https?:\/\//i.test(trimmed)) {
+    trimmed = "https://" + trimmed;
+  }
+
+  return trimmed;
 }

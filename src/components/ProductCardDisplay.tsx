@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
-import { formatXLink } from "../utils/theme";
+import { formatWebsiteLink, formatXLink } from "../utils/theme";
 
 interface Product {
   id: string;
@@ -122,7 +122,7 @@ const ProductCardDisplay = ({
             description={product.description}
             href={product.id}
             x={formatXLink(product.xAccount)}
-            website={product.website}
+            website={formatWebsiteLink(product.website)}
             users={product.userCount}
             brandColors={product.brandColors}
           />
