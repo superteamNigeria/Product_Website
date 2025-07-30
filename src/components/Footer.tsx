@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="w-full flex flex-col sm:flex-row justify-between items-center">
+    <footer className="w-full flex flex-col sm:flex-row justify-between items-center p-10">
       <div className="order-2 sm:order-1">
         <Link to={"/"}>
           <img

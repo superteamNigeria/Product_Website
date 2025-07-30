@@ -1,14 +1,14 @@
-import { ChevronRight, Globe, Twitter } from "lucide-react";
-import React, { useState } from "react";
+import { ChevronRight, Globe, Twitter } from 'lucide-react';
+import React, { useState } from 'react';
 import {
   avatar1,
   avatar2,
   avatar3,
   avatar4,
   avatar5,
-} from "../constants/images";
-import { Link } from "react-router-dom";
-import { shortenString } from "../utils/theme";
+} from '../constants/images';
+import { Link } from 'react-router-dom';
+import { shortenString } from '../utils/theme';
 
 // Animated Button component
 interface ButtonProps {
@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({ title, href, brandColors = [] }) => {
     } else if (brandColors.length === 1) {
       return brandColors[0];
     }
-    return "";
+    return '';
   };
 
   const buttonStyle =
@@ -40,7 +40,11 @@ const Button: React.FC<ButtonProps> = ({ title, href, brandColors = [] }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <span className="transition-transform duration-300 group-hover:-translate-x-1">
+        <span
+          className={`transition-transform duration-300 group-hover:-translate-x-1 ${
+            isHovered ? 'text-white' : ''
+          }`}
+        >
           {title}
         </span>
         <span className="opacity-0 transform translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 mr-2">
@@ -56,17 +60,17 @@ const Button: React.FC<ButtonProps> = ({ title, href, brandColors = [] }) => {
 // Badge component for categories
 const Badge = ({ children, variant }) => {
   const variants = {
-    Live: "bg-[#A8E6CF] font-regular dark:bg-[#20232D] dark:text-white/70 text-black text-center",
-    DeFi: "bg-[#10B981] font-regular text-white text-center",
-    DePIN: "bg-[#06B6D4] font-regular text-white text-center",
-    PayFi: "bg-[#F59E0B] font-regular text-white text-center",
-    RWAs: "bg-[#DC2626] font-regular text-white text-center",
-    InfoFi: "bg-[#7C3AED] font-regular text-white text-center",
-    Stablecoins: "bg-[#374151] font-regular text-white text-center",
-    Gaming: "bg-[#0EA5E9] font-regular text-white text-center",
-    AI: "bg-[#9CA3AF] font-regular text-white text-center",
-    Infrastructure: "bg-[#8B5CF6] font-regular text-white text-center",
-    Other: "bg-[#9CA3AF] font-regular text-white text-center",
+    Live: 'bg-[#A8E6CF] font-regular dark:bg-[#20232D] dark:text-white/70 text-black text-center',
+    DeFi: 'bg-[#10B981] font-regular text-white text-center',
+    DePIN: 'bg-[#06B6D4] font-regular text-white text-center',
+    PayFi: 'bg-[#F59E0B] font-regular text-white text-center',
+    RWAs: 'bg-[#DC2626] font-regular text-white text-center',
+    InfoFi: 'bg-[#7C3AED] font-regular text-white text-center',
+    Stablecoins: 'bg-[#374151] font-regular text-white text-center',
+    Gaming: 'bg-[#0EA5E9] font-regular text-white text-center',
+    AI: 'bg-[#9CA3AF] font-regular text-white text-center',
+    Infrastructure: 'bg-[#8B5CF6] font-regular text-white text-center',
+    Other: 'bg-[#9CA3AF] font-regular text-white text-center',
   };
 
   return (
@@ -86,7 +90,8 @@ const Avatar = ({ src, alt, className }) => {
     <img
       src={src}
       alt={alt}
-      className={`w-12 h-12 rounded-full border-3 border-white ${className}`}
+      className={`rounded-full border-3 border-white ${className}`}
+      style={{ width: 40, height: 40, minWidth: 40, minHeight: 40 }}
     />
   );
 };
@@ -118,6 +123,10 @@ const ProductCard = ({
   const maxVisibleCategories = 3;
   const visibleCategories = categories.slice(0, maxVisibleCategories);
   const remainingCount = categories.length - maxVisibleCategories;
+
+  // For button hover effect, we want to push the avatars/users a little (not too much)
+  // We'll use a state to track hover and apply a small translate-x on hover
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
 
   return (
     <div className="rounded-2xl p-4 max-w-md mx-auto">
@@ -169,39 +178,82 @@ const ProductCard = ({
       </p>
 
       {/* Bottom section */}
-      <div className="p-1 flex justify-between items-center pt-2 gap-2">
-        <Button
-          title="Read More"
-          href={`/product/${href}`}
-          brandColors={brandColors}
-        />
+      <div className="p-1 flex justify-between items-center pt-2 gap-0">
+        <div
+          onMouseEnter={() => setIsButtonHovered(true)}
+          onMouseLeave={() => setIsButtonHovered(false)}
+          className="flex items-center"
+        >
+          <Button
+            title="Read More"
+            href={`/product/${href}`}
+            brandColors={brandColors}
+          />
+        </div>
 
-        {/* Avatar stack */}
-        {avatars && avatars.length > 0 && (
-          <div className="flex -space-x-4">
-            {avatars.map((avatar, index) => (
-              <Avatar
-                key={index}
-                src={avatar}
-                alt={`Team member ${index + 1}`}
-                className={
-                  index === 0
-                    ? "bg-[#00F2FF]"
-                    : index === 1
-                    ? "bg-[#C336F4]"
-                    : index === 2
-                    ? "bg-[#19E6AD]"
-                    : ""
-                }
-              />
-            ))}
+        {/* Avatars and user count container */}
+        <div
+          className="flex items-center"
+          style={{
+            width: 178,
+            height: 58,
+            minWidth: 178,
+            minHeight: 58,
+            maxWidth: 178,
+            maxHeight: 58,
+            flexShrink: 0,
+            flexGrow: 0,
+            marginLeft: 4, // REDUCED gap between button and avatars/users
+            transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)',
+            transform: isButtonHovered ? 'translateX(12px)' : 'translateX(0)',
+          }}
+        >
+          {/* Avatar stack and user count tightly grouped */}
+          <div className="flex items-center" style={{ width: '100%' }}>
+            <div className="flex items-center -space-x-2" style={{ flexShrink: 0 }}>
+              {avatars.map((avatar, index) => (
+                <Avatar
+                  key={index}
+                  src={avatar}
+                  alt={`Team member ${index + 1}`}
+                  className={
+                    index === 0
+                      ? 'bg-[#00F2FF]'
+                      : index === 1
+                      ? 'bg-[#C336F4]'
+                      : index === 2
+                      ? 'bg-[#19E6AD]'
+                      : ''
+                  }
+                />
+              ))}
+            </div>
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: 68,
+                height: 24,
+                minWidth: 68,
+                minHeight: 24,
+                maxWidth: 68,
+                maxHeight: 24,
+                marginLeft: 4,
+                background: 'none',
+              }}
+            >
+              <span
+                className="font-extrabold text-[#1E1E1E] dark:text-white"
+                style={{
+                  fontSize: 16,
+                  lineHeight: '24px',
+                  whiteSpace: 'nowrap',
+                  background: 'none',
+                }}
+              >
+                {users}+
+              </span>
+            </div>
           </div>
-        )}
-
-        <div className="flex -space-x-4">
-          <h2 className="font-extrabold text-[#1E1E1E] dark:text-white text-lg">
-            {users}+
-          </h2>
         </div>
       </div>
     </div>
