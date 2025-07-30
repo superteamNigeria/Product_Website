@@ -42,7 +42,7 @@ const ProductCardDisplay = ({
   error,
 }: ProductCardDisplayProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const PRODUCTS_PER_PAGE = 10;
+  const PRODUCTS_PER_PAGE = 12;
 
   // Reset to first page when filters change
   useEffect(() => {
