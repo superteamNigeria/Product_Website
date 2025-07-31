@@ -18,7 +18,6 @@
   
   body {
     font-family: "Archivo-Regular", sans-serif;
-    background-color: #0A0D14;
   }
   
   @custom-variant dark (&:is(.dark *));
